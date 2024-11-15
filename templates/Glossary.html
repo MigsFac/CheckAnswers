@@ -1,0 +1,236 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+    <h1>用語集</h1>
+    <div class="wordreg">
+        <input type="file" id="filein" accept=".csv" style="display: none;">
+        
+        <button type="button" class="btn btn-primary btn-sm" id="wordreg" style="display:{% if session["user_id"] and session["user_id"]["role"] == "admin" %}grid{% else %}none{% endif %};justify-self:end;width:6rem;">用語登録</button>  
+        
+    
+    </div>
+
+    <div class="tags">
+            <input type="radio" id="tag0" class="tag-radio" name="tagR" value="0" onclick="smallTag('All')" style="display:none;">
+            <label for="tag0" class="taglist" >All</label>
+        {% for tag in Ltaglist %}
+            <input type="radio" id="tag{{ loop.index }}" class="tag-radio" name="tagR" value="{{ loop.index }}" onclick="smallTag('{{ tag }}')" style="display:none;">
+            <label for="tag{{ loop.index }}" class="taglist" >{{ tag }}</label>
+        {% endfor %}
+    </div>
+
+    <div class="tagsmall" id="tagsmall"></div>
+    <div class="atag" id="atag"></div>
+
+    <div id="prenextpage" class="prenumnext" style="display:none;">
+        <button id="prev" class="prenex" disabled> &lt;&lt; prev </button>
+        
+            <div id="numdiv" class="prenexin"></div>
+        
+        <button id="next" class="prenex">next &gt;&gt;</button>
+    </div>
+
+    <div class="glossary" id="glossaryid">
+     タグを選んでね
+    </div>
+    
+
+    <a href="{{ url_for('index')}}">インデックスへ戻る</a>
+
+    <script>//タグを選んだものを表示したい
+        const terms = {{ terms|tojson }};
+        const Ltagtag = {{ Ltagtag|tojson }};
+        let relateName = null;
+        let grelateName = null;
+        const gArea = document.getElementById('glossaryid');
+        let kana = null;
+
+        const PerPage = 30;//1ページに表示するアイテム数
+        let currentPage = 1;//現在のページ番号　初期値
+        let pages = 0;
+
+        function selectTag(tag){console.log('selectTag is run');//Ltagの中のさらにtagを選んだ時の表示
+          const atagevent = document.getElementById('atag');
+
+            atagevent.addEventListener('click', (event) => {
+                   const taga = new RegExp(tag.slice(1,-1));
+                   kana = Object.keys(terms)
+                   .filter(key => taga.test(terms[key].reading))
+                   .map(key => terms[key])
+                   .sort((a,b) => a.reading.localeCompare(b.reading))
+                   .map(term => term.name);
+                   relateName = kana; 
+                   gArea.innerHTML = '';
+
+                   kanapre = Object.keys(terms)
+                   .filter(key => taga.test(terms[key].reading))
+                   .map(key => terms[key].name)
+                   
+                   renderPage(currentPage,relateName);
+                   return            
+            });
+            
+            if (relateName != kana){console.log('relateNameとkanaは一緒じゃないです')
+            relateName = Object.keys(terms).filter(key => terms[key].tags.includes(tag));
+            }
+            gArea.innerHTML = '';
+            currentPage = 1;
+        
+            renderPage(currentPage,relateName);
+        };
+
+        function smallTag(tag){//Ltagを選んだ時にLtagの中身全部を表示して、その中のtagを選ぶとselectTagを呼び出す。
+            grelateName = Object.keys(Ltagtag).filter(key => Ltagtag[key].Ltag.includes(tag));
+            relateName = Object.keys(terms).filter(key =>terms[key].Ltag.includes(tag));
+            const sArea = document.getElementById('tagsmall');
+            const gArea = document.getElementById('glossaryid');
+            const aArea = document.getElementById('atag');
+            sArea.innerHTML = '';
+            gArea.innerHTML = '';
+            aArea.innerHTML = '';
+            let isRunning = true;
+            currentPage = 1;
+            if (tag == 'All'){
+                grelateName = Object.keys(Ltagtag)
+                relateName = Object.keys(terms)
+                aArea.innerHTML =  `<label name="atag" for="Ltag1" data-value="1" class="taglist-all" id="Ltag1" onclick="selectTag('/^[a-zA-Z]/')">A-Z</label><input type="radio" id="Ltag1" style="display:none;" value="1">
+                                    <label name="atag" for="Ltag2" data-value="2" class="taglist-all" id="Ltag2" onclick="selectTag('/^[アイウエオ]/')">あ</label><input type="radio" id="Ltag2" style="display:none;" value="2">
+                                    <label name="atag" for="Ltag3" data-value="3" class="taglist-all" id="Ltag3" onclick="selectTag('/^[カキクケコ]/')">か</label><input type="radio" id="Ltag3" style="display:none;" value="3">
+                                    <label name="atag" for="Ltag4" data-value="4" class="taglist-all" id="Ltag4" onclick="selectTag('/^[サシスセソ]/')">さ</label><input type="radio" id="Ltag4" style="display:none;" value="4">
+                                    <label name="atag" for="Ltag5" data-value="5" class="taglist-all" id="Ltag5" onclick="selectTag('/^[タチツテト]/')">た</label><input type="radio" id="Ltag5" style="display:none;" value="5">
+                                    <label name="atag" for="Ltag6" data-value="6" class="taglist-all" id="Ltag6" onclick="selectTag('/^[ナニヌネノ]/')">な</label><input type="radio" id="Ltag6" style="display:none;" value="6">
+                                    <label name="atag" for="Ltag7" data-value="7" class="taglist-all" id="Ltag7" onclick="selectTag('/^[ハヒフヘホ]/')">は</label><input type="radio" id="Ltag7" style="display:none;" value="7">
+                                    <label name="atag" for="Ltag8" data-value="8" class="taglist-all" id="Ltag8" onclick="selectTag('/^[マミムメモ]/')">ま</label><input type="radio" id="Ltag8" style="display:none;" value="8">
+                                    <label name="atag" for="Ltag9" data-value="9" class="taglist-all" id="Ltag9" onclick="selectTag('/^[ヤユヨ]/')">や</label><input type="radio" id="Ltag10" style="display:none;" value="9">
+                                    <label name="atag" for="Ltag10" data-value="10" class="taglist-all" id="Ltag10" onclick="selectTag('/^[ラリルレロ]/')">ら</label><input type="radio" id="Ltag11" style="display:none;" value="10">
+                                    <label name="atag" for="Ltag11" data-value="11" class="taglist-all" id="Ltag11" onclick="selectTag('/^[ワヲン]/')">わ</label><input type="radio" id="Ltag12" style="display:none;" value="11">`;
+            } else {
+                if (grelateName.length > 0){
+                    grelateName.forEach(nameKey => {
+                        const LtagInfo = Ltagtag[nameKey];
+                        sArea.innerHTML += LtagInfo.tag.map((tag,index) =>`<label name="Ltagn" for="Ltag${index+1}" data-value="${tag}" class="taglist" id="Ltag${index+1}">${tag}</label><input type="radio" id="Ltag${index+1}" style="display:none;" value="${tag}" onclick="selectTag('${tag}')">`).join('');  
+                    });
+                }
+            } 
+            const Ltagevent = Array.from(document.getElementsByName('Ltagn'));
+            Ltagevent.forEach((Leve) => {
+                Leve.addEventListener('click',(event) => {
+                    isRunning = false;
+                    console.log('isRunning:' ,isRunning);
+                    gArea.innerHTML ='';
+                    const labeldata = event.target.getAttribute('data-value');
+                    console.log('event.target.value:',labeldata);
+                    selectTag(labeldata);
+                });
+            });
+            if (isRunning){//Ltag選ばれてればそのまま表示。中のタグ選んだ時点でfalseにして表示を止める。
+                console.log('if isRunning:',isRunning);
+
+                renderPage(currentPage,relateName);
+            } 
+        }
+    </script>
+
+    <script>//登録ボタン
+        document.getElementById('wordreg').addEventListener('click',function() {
+            document.getElementById('filein').click();
+        });
+        document.getElementById('filein').addEventListener('change', (event) => {
+                const filein = event.target.files[0];
+                if(filein){
+                    fetch('/filein',{
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'   
+                        },
+                        body: JSON.stringify({ filein: filein.name})
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Success:', data);
+                    })
+                    .catch((error) => {
+                        console.error('Error:',error);
+                    });
+                }
+        });  
+
+
+        function renderPage(page,items){ console.log('function renderpage');
+            const gArea = document.getElementById('glossaryid');
+            gArea.innerHTML = '';
+            pages=1;
+
+            if (!Array.isArray(items) || items.length === 0) {
+              return;
+            }
+            const start = (page - 1) * PerPage;
+            const end = start + PerPage;
+            const itemShow = items.slice(start,end);
+            
+            itemShow.forEach(nameKey => {
+                pages = Math.ceil(items.length / PerPage)
+                console.log('items.length:',items.length,'perpage:',PerPage,'pages:',pages);
+                const termsInfo = terms[nameKey];
+                
+                gArea.innerHTML += `<div class="gname">${termsInfo.name}</div><div class="gdes">${termsInfo.description}</div>`;
+            })
+            let png = document.getElementById('prenextpage')
+            if (pages >1){
+                png.style.display ="";
+            } else{
+                png.style.display ="none";
+            }
+            const numcont = document.getElementById('numdiv');
+            numcont.innerHTML=""
+
+            for (let i=1;i <= pages;i++){
+                const numdiv = document.createElement("div");
+                numdiv.textContent = i;
+                numdiv.classList.add("addnumber");
+                numdiv.setAttribute("id",`numlist${i}`);
+                numdiv.setAttribute("data-value",`${i}`)
+                numcont.appendChild(numdiv);
+            }
+            const allnum = document.querySelectorAll(".addnumber");
+            allnum.forEach(numDiv => {
+                const value = parseInt(numDiv.getAttribute("data-value"),10);
+                if(value == page){
+                    numDiv.style.fontSize = "1.5rem";
+                    numDiv.style.textDecoration = "none";
+                    numDiv.style.cursor = "default";
+                }
+            })
+            
+            
+            document.getElementById('prev').disabled = page ==1;
+            document.getElementById('next').disabled = end >= items.length;
+        }
+        //ページ移動用
+        document.getElementById('next').addEventListener('click',() => {
+            if (currentPage < pages){
+                currentPage++;
+                renderPage(currentPage,relateName);
+            }
+        });
+
+        document.getElementById('prev').addEventListener('click',() => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderPage(currentPage,relateName);
+            }
+        });
+
+        document.getElementById('numdiv').addEventListener("click",(event) => {
+            if(event.target.classList.contains("addnumber")){
+                const addnum = event.target.getAttribute('data-value');
+                console.log('addnum:',addnum);
+                currentPage = addnum;
+                renderPage(currentPage,relateName);
+            }
+        });
+        
+    </script>
+{% endblock %}
