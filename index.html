@@ -1,0 +1,124 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+    <h1>Mig's Factory</h1>
+    <p>G検定用の自分学習用のホームページです。</p>
+    <p>html,css,javascript,pythonの勉強も兼ねてます。</p><br>
+    <div class="indexblock">
+        <a href="{{ url_for('Calculator') }}" class="aheading">G検定用計算機</a><br>
+        <div class="image-gallery">
+         <img src="{{ url_for('static', filename='images/cosin.png')}}" class="mathintro">
+         <img src="{{ url_for('static', filename='images/euclid.png')}}" class="mathintro">
+          <img src="{{ url_for('static', filename='images/confumix.png')}}" class="mathintro">
+          <img src="{{ url_for('static', filename='images/FMap.png')}}" class="mathintro">
+        </div>
+        <p>解き方はわかるんだけど、計算が面倒で時間かかりすぎる時に電卓代わりに使おうと思いました。<br>が、実際の問題や問題集ではもっと項目が多かったり、使うまでもなかったり、違うところが穴埋めになっていたりで、<br>結局公式の確認が一番役立ちました。</p>
+    </div>
+
+    <div class="indexblock">
+        <div class="image-galleryG">
+           <div class="row1">
+            <a href="{{ url_for('Gchrono') }}" class="aheading gt1">G検定年表</a>
+            <a href="{{ url_for('Gquotes') }}" class="aheading gt2">名言集</a>
+            <a href="{{ url_for('dataset') }}" class="aheading gt3">データセット</a>
+            <a href="{{ url_for('AIethics') }}" class="aheading gt4">AI倫理</a>
+            <a href="{{ url_for('GLevel') }}" class="aheading gt5">レベル・区分</a>
+           </div>
+
+           <div class="row2">
+            <img src="{{ url_for('static', filename='images/Gchrono.png')}}" class="mathintro gi1">
+            <img src="{{ url_for('static', filename='images/Gquotes.png')}}" class="mathintro gi2">     
+            <img src="{{ url_for('static', filename='images/dataset.png')}}" class="mathintro gi3">
+           </div>
+           <div class="row3"> 
+            <img src="{{ url_for('static', filename='images/AIethics.png')}}" class="mathintro gi4">
+            <img src="{{ url_for('static', filename='images/GLevel.png')}}" class="mathintro gi5">
+           </div>
+
+           <div class="indexcap gc1">何年にどれが優勝したとか、どうでもいいと思いながらも覚えないといけないので一覧にしました。</div>
+           <div class="indexcap gc2">名言集も同じ感じですね。誰が何言ったかなんて・・</div>
+           <div class="indexcap gc3">データセットはバラバラと出てくるので、どれがどんなのだったか知りたくて。</div>
+           <div class="indexcap gc4">AI倫理に関しては、内容が大事なのはわかるんですが、どれがどれで、原則と理念の違いと、国なのかメーカーなのかなんなのか。</div>
+           <div class="indexcap gc5">レベル分けもどれがどんなレベルか知りたくて作ったものの、もっとあった気がしたんですが、まとめるほどではなかったかも・・</div>
+        </div>
+        
+    </div>
+
+    <div class="indexblock">
+        <a href="{{ url_for('Glossary')}}" class="aheading">用語集</a>
+        <div class="image-gallery">
+          <img src="{{ url_for('static', filename='images/glossary1.png')}}" class="mathintro">
+          <img src="{{ url_for('static', filename='images/glossary2.png')}}" class="mathintro">
+        </div>
+        <p>用語集はChatGPTに聞いて返ってきた説明がほとんどなので、ムラがあって欲しい情報足りてないのが多いです。<br>途中から用語集の実用性よりもホームページ用の作成に力入れてました。</p>
+    </div>
+
+    <div class="indexblock">
+       <a href="{{ url_for('TestQA')}}" class="aheading">TestQA</a>
+       <div class="image-gallery">
+          <img src="{{ url_for('static', filename='images/TestQA1.png')}}" class="mathintro">
+          <img src="{{ url_for('static', filename='images/TestQA2.png')}}" class="mathintro">
+          <img src="{{ url_for('static', filename='images/TestQA3.png')}}" class="mathintro">
+          <img src="{{ url_for('static', filename='images/TestQA4.png')}}" class="mathintro">
+       </div>
+       <p>TestQAは自分用。問題集の答えだけをひたすら入力して答え合わせの手間を省くのと結果閲覧用。<br>最初はpythonのCLIに自分の答えの番号と正解の答えの番号コピペしてただけのはずが、いつの間にかこんなのに。</p>
+    </div>
+
+
+    <script>
+        const images = document.querySelectorAll('.mathintro')
+        const mediaQuery = window.matchMedia('(max-width:768px)');
+
+        function Zoom(e){
+            const rect = e.target.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const maxScale = 2.2;
+            const minScale = 1;
+            const range = rect.width * 0.1;
+            const rangeY = rect.height * 0.1;
+            const distance = Math.abs(rect.width / 2 - x);
+            const distanceY = Math.abs(rect.height / 2 -y);
+            let scaleX ;
+            let scaleY;
+            if  (distance <= range){
+                scaleX = maxScale;
+            } else {
+                scaleX = maxScale - ((distance - range)/(rect.width / 2 - range))*(maxScale - minScale);
+            }
+
+            if (distanceY <= rangeY){
+                scaleY = maxScale;
+            } else {
+                scaleY = maxScale - ((distanceY - rangeY) / (rect.height / 2 - rangeY)) * (maxScale - minScale);
+            }
+            const scale = Math.min(scaleX,scaleY);
+            e.target.style.transform = `scale(${scale})`;
+        }
+
+        function handleMouse(e) {
+            if (!mediaQuery.matches) {
+                Zoom(e);
+            } else {
+                e.target.style.transform = 'scale(1)';
+            }
+        }
+
+        images.forEach(image => {
+            image.addEventListener('mouseenter',function(){
+                this.style.zIndex = 2;
+            });
+            image.addEventListener('mousemove',handleMouse);
+            image.addEventListener('mouseleave',function(){
+                this.style.zIndex = 1;
+                this.style.transform = 'scale(1)';
+            });
+            
+        });
+
+
+
+    </script>
+   
+{% endblock %}
