@@ -1,20 +1,23 @@
-from flask import render_template, request, jsonify, redirect, session, url_for
-from mathg import app
+from flask import Flask, render_template, request, jsonify, redirect, session, url_for
+
 from datetime import datetime
 import pandas as pd
 import numpy as np
 import sqlite3, math, json, os, chardet
 from werkzeug.security import generate_password_hash, check_password_hash
 
+print("views.py is here")
 DataBase = "database.db"
 ResultData = "resultDB.db"
 IntegrationDB = "IntegrationDB.db"
 
+app = Flask(__name__)
 app.secret_key = "your_secret_key"
 
 
 @app.route("/")
 def index():
+    print("index here")
     return render_template("index.html", current_page="index")
 
 
@@ -53,16 +56,6 @@ def AIethics():
 @app.route("/GLevel")
 def GLevel():
     return render_template("GLevel.html", current_page="GLevel")
-
-
-@app.route("/osiec")
-def osiec():
-    penlist = pd.read_csv("penlist.csv", encoding="cp932")
-
-    pen_dict = {"pen_titles": [penlist]}
-
-    data = "views.py something"
-    return render_template("osiec.html", pen_dict=pen_dict, current_page="osiec")
 
 
 @app.route("/TestQA")
@@ -843,13 +836,7 @@ def Glossary():
                    """
     )
     tagtag = cursor.fetchall()
-
     con.close()
-
-    for row in tagtag:
-        for column in row.keys():
-            print("tagtag:", row[column])
-        print("-" * 20)
 
     terms = {}
     for row in data:
