@@ -1,0 +1,96 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+    <h1>G検定　AI倫理</h1>
+    
+    <div class="EU">
+        <h2>EUの規制</h2>
+        <div class="name">GDPR（EU一般データ保護規則）：ハードロー</div>
+        <div class="caption">EUにおける個人データやプライバシー保護に関する規則であると同時に、EU域内および域外におけるデータの利活用の促進を目指している。データポータビリティ権とは各サービスのユーザが自身の個人データ（蓄積された利用履歴など）にアクセスできるとともに、その持ち出しや移転を可能にする権利。導入目的に個人データを扱う事業者間の競争の活発化および新規サービスの創出を促すことが含まれている。</div>
+        <div class="caption">特徴：EU域内に拠点がなくてもEU域内のデータ主体に対して物品・サービスの提供または行動の監視を行う場合にも適用される。</div>
+        <div class="caption">無断でのEU域外への個人データへの移転（持ち出し）が禁止されており、持ち出しには煩雑な手続きが必要で、欧州委員会から十分性認定を受けた国は規制が緩和される。</div>
+
+        <div class="name">AI規制法（AIact）：ハードロー</div>
+        <div class="caption">AIが及ぼしうる潜在的なリスクに応じて規制の内容を変えるリスクベースアプローチを採用している。</div>
+    </div>
+    
+    
+    <div class="AIethics">
+        <h2>EUのリスクベースアプローチ</h2>
+        <div class="name">許容できないリスク</div>
+        <div class="caption">人間の安全や権利に明確な脅威となる。</div>
+        <div class="caption">AIによる人の信用力格付、犯罪捜査の生体識別、AIによる洗脳、システムの利用者の脆弱性を利用するAI</div>
+
+        <div class="name">ハイリスク</div>
+        <div class="caption">公衆の安全、健康、人権などに顕著な影響を及ぼす可能性があるAI</div>
+        <div class="caption">AI顔認証、自動運転、医療AI、教育、人事、移住</div>
+
+        <div class="name">限定的なリスク</div>
+        <div class="caption">個人に対して直接的な危険はもたらさない一般的リスク。「説明責任の義務」と「透明性の義務」が発生する。</div>
+        <div class="caption">ディープフェイク、チャットボット、感情認識システム、オンライン広告配信</div>
+
+        <div class="name">最小リスク</div>
+        <div class="caption">自由に利用することが認められている。</div>
+        <div class="caption">スパムフィルタ、ビデオゲーム</div>
+    </div>
+
+ 
+        
+    <div class="guideline">
+        <h2>ガイドライン</h2>
+        <div class="name">IEEE Ethically Aligned Design(EAD) - アメリカ</div>
+        <div class="caption">米国電気電子学会(IEEE)がAIに関する倫理的課題について検討するために作成した報告書。知的な機械システムに対する恐怖や過度な期待を払拭すること、倫理に配慮した技術を作ることによってイノベーションを促進することを目的とする。AIの専門家だけでなく法律、倫理、哲学などの領域の研究者、企業関係者、市民やNPO団体、政策関係者などの意見を集約。自律型兵器システムの再構築が項目の１つに含まれている。</div>
+
+        <div class="name">Ethics Guidelines for Trustworthy AI　- EU<span  style="font-size:smaller;font-weight:normal;"><sub>信頼性を備えたAIのための倫理ガイドライン</sub></span></div>
+        <div class="caption">EUのAIハイレベル専門家会合（AI HLEG)によって発表。EU域内だけではなくEU域外からも企業、研究所、政府当局などから参加機関を募集し、参加機関からのフィードバックをもとに見直しを経て、最終的には国際的なAIガイドラインに発展させる方針</div>
+
+        <div class="name">人間中心のAI社会原則</div>
+        <div class="caption">人間が過度に依存したり、AIが人間の行動を制限したりするのではなく、人間が自身の能力を発揮するための道具としてAIを使いこなして、人間の尊厳が尊重される社会の構築を目指す。</div>
+        <div class="caption">基本理念：人種、性別、国籍、年齢、政治的信念、宗教などの多様なバックグラウンドを理由に不当な差別をされることなく、すべての人々が公平に扱われなければならない。</div>
+        <div class="caption">基本原則：人間中心の原則、教育・リテラシーの原則、プライバシー確保の原則、セキュリティ確保の原則、公正競争確保の原則、公平性・説明責任・及び透明性の原則、イノベーションの原則</div>
+
+        <div class="name">Partnership on AI　<span style="font-size:small;font-weight:normal;">人々と社会に利益をもたらす人工知能のためのパートナーシップ</span></div>
+        <div class="caption">2016年にMeta(当時のFacebook),Amazon,Google,IBM,Microsoftの５社によって創立された非営利団体。AIの分野における理解促進とベストプラクティスの策定、倫理、公平性、信用性、透明性やプライバシーが重要な論点となる。</div>
+        
+        <div class="name">AI戦略会議 - AI事業者ガイドライン案：ソフトロー</div>
+        <div class="caption">企業、政府、自治体、教育機関、NPOなどの非営利団体など、AIを活用するあらゆる組織を対象としたAIの開発・提供・利用の各場面において必要な取り組みについての基本的な考え方を示す。</div>
+    
+        <div class="name">AAAI</div>
+        <div class="caption">Presidential Panel on Long-Term AI Futures</div>
+    
+        <div class="name">AI開発原則 - Microsoft社</div>
+        <div class="caption">AI技術の開発や運用にあたり、倫理的かつ安全な実践を確保するためのガイドラインです。公正性、信頼性と安全性、プライバシーとデータ保護、説明可能性、社会的利益、持続可能性を原則に掲げている</div>
+
+        <div class="name">デジタル戦略2025 - ドイツ</div>
+        <div class="caption">ドイツ政府が策定した戦略で社会全体のデジタルインフラの強化と技術革新を目指している。経済のデジタル化、社会のデジタル化。</div>
+
+        <div class="name">我が国のAIガバナンスの在り方ver1.1 - 日本（経済産業省）</div>
+        <div class="caption">非拘束の中間的なガイドライン（ソフトロー）の作成にあたっては諸外国の取り組みなどを参考にしつつ、日本の企業ガバナンスの特徴にも目を向けるべきとされている。</div>
+    </div>
+
+    <div class="guideline">
+        <div class="name">AI事業者ガイドライン</div>
+        <div class="caption">2024年4月に総務省、経済産業省から人間中心のAI社会原則を土台とし、AI開発ガイドライン・AI利活用ガイドライン・AI原則実践のためのガバナンス・ガイドラインを統合、見直ししたもの。</div>
+        <div class="caption">基本理念：①人間の尊厳が尊重される社会、②多様な背景を持つ人々が多様な幸せを追求できる社会、③持続可能な社会</div>
+        <div class="caption">原則：人間中心、安全性、公平性、プライバシー保護、セキュリティ確保、透明性、アカウンタビリティ、教育・リテラシー、公正競争確保、イノベーション</div>
+    </div>
+
+    <div class="Trans">
+        <div class="name">AIの社会実装に伴って想定されうるリスク</div>
+        <div class="caption">AI自身のリスク</div>
+        <div class="caption">人間がAIを利用して引き起こすリスク</div>
+        <div class="caption">既存の社会秩序への負の影響</div>
+        <div class="caption">法律・社会の在り方</div>
+    </div>
+    <div class="Trans">
+        <div class="name">AIの透明性</div>
+        <div class="caption">透明性：AIモデルの構造、仕組み、処理プロセスを一般の人が理解できるようにすること。</div>
+        <div class="caption">公平性：AIが不当なバイアスを社会に反映させないように配慮すること。モデル作成の段階で人種・民族・性別・文化などのセンシティブ属性に対する不公平を排除する。</div>
+        <div class="caption">説明責任：AIを用いた業務の内容や目的、不祥事が生じた場合の責任体制を開示する責任</div>
+
+    </div>
+
+
+    <a href="{{ url_for('index')}}">インデックスへ戻る</a>
+{% endblock %}
