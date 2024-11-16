@@ -2,7 +2,9 @@ from flask import Flask
 from views import app
 from flask_sqlalchemy import SQLAlchemy
 import os
+from dotenv import load_dotenv
 
+load_dotenv()
 # import redis
 # app = Flask(__name__)
 app.config.from_object("config")
