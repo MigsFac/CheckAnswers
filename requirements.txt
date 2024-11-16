@@ -3,3 +3,4 @@ Gunicorn
 pandas
 chardet
 flask_sqlalchemy
+dotenv
