@@ -27,7 +27,7 @@
     <form action="/Question" method="POST">
     <div class="menu">
         <div class="Title mx-auto">
-            <select class="Tselect" name="QTitle">
+            <select class="Tselect" name="QTitle" id="QTitle">
                 {% for option in BookTitle %}
                     <option value="{{option['Title']}}">{{ option['Title'] }}</option>
                 {% endfor %}
@@ -83,6 +83,7 @@
 
 
     <script>
+        const BookTitle = document.getElementById("QTitle")
         //ログイン
         async function loginUser(){
             const username = document.getElementById("username").value;
@@ -157,6 +158,11 @@
         //タイマー開始の合図を開始クリックしたときにしたい
         const started = document.getElementById('start');
         started.addEventListener('click',() => { 
+            console.log("BookTitle:",BookTitle)
+            if (BookTitle.options.length === 0){
+                alert("設定からTitleを作成して選択してください。")
+                event.preventDefault();
+            }
             if (timeflag.checked){
                 
                 try{
