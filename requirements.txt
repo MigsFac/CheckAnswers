@@ -2,3 +2,4 @@ Flask
 Gunicorn
 pandas
 chardet
+flask_sqlalchemy
