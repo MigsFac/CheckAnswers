@@ -10,8 +10,6 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 DATABASE_DIR = os.path.join(BASE_DIR, "database")
 
 IntegrationDB = os.path.join(DATABASE_DIR, "IntegrationDB.db")
-DemoDB = os.path.join(DATABASE_DIR, "DemoDB.db")
-glossary = os.path.join(DATABASE_DIR, "glossary.db")
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"
@@ -77,8 +75,8 @@ def TestQA():
             "SELECT * FROM BookTitle WHERE user_id =?", (session["user_id"]["user_id"],)
         ).fetchall()
     else:
-        con = sqlite3.connect(DemoDB)
-        BT_db = con.execute("SELECT * FROM BookTitle").fetchall()
+        con = sqlite3.connect(IntegrationDB)
+        BT_db = con.execute("SELECT * FROM DEMOBookTitle").fetchall()
     con.close()
 
     BookTitle = []
@@ -102,6 +100,7 @@ def db():
         ).fetchall()
         userlist = con.execute("SELECT user_id,username,role FROM users").fetchall()
         session["userlist"] = userlist
+        print(userlist)
         con.close()
         BookTitle = []
         for row in user_DB:
@@ -141,12 +140,12 @@ def register():
                 ).fetchall()
                 con.close()
             else:
-                con = sqlite3.connect(DemoDB)
+                con = sqlite3.connect(IntegrationDB)
                 cursor = con.cursor()
                 for i in check:
-                    cursor.execute("DELETE FROM BookTitle WHERE Title = ?", (i,))
+                    cursor.execute("DELETE FROM DEMOBookTitle WHERE Title = ?", (i,))
                 con.commit()
-                db = con.execute("SELECT * FROM BookTitle").fetchall()
+                db = con.execute("SELECT * FROM DEMOBookTitle").fetchall()
                 con.close()
             Bdb = []
             for row in db:
@@ -167,13 +166,16 @@ def register():
             ).fetchall()
             con.close()
         else:  # ひとまずデモ用にログインしてないときはデモデータベース（ユーザーadminのみでログインなし）使用
-            con = sqlite3.connect(DemoDB)
+            con = sqlite3.connect(IntegrationDB)
+            user_id = con.execute(
+                "SELECT user_id FROM DEMOusers WHERE username = ?", ("admin",)
+            ).fetchone()[0]
             con.execute(
-                "INSERT INTO BookTitle (user_id,Title,qnum,collectans) VALUES(?,?,?,?)",
-                [1, Title, qnum, collectans],
+                "INSERT INTO DEMOBookTitle (user_id,Title,qnum,collectans) VALUES(?,?,?,?)",
+                [user_id, Title, qnum, collectans],
             )
             con.commit()
-            db = con.execute("SELECT * FROM BookTitle").fetchall()
+            db = con.execute("SELECT * FROM DEMOBookTitle").fetchall()
             con.close()
         Bdb = []
         for row in db:
@@ -479,9 +481,9 @@ def Question():
                 }
             )
     else:
-        con = sqlite3.connect(DemoDB)
-        R_db = con.execute("SELECT * FROM ResultList").fetchall()
-        bookid = con.execute("SELECT * FROM BookTitle").fetchall()
+        con = sqlite3.connect(IntegrationDB)
+        R_db = con.execute("SELECT * FROM DEMOResultList").fetchall()
+        bookid = con.execute("SELECT * FROM DEMOBookTitle").fetchall()
         con.close()
         book_id = None
         bookid = bookid or []
@@ -677,10 +679,13 @@ def savelist():
             [user_id, book_id, date, Title, collect, uncollect, accuracy, RD, favo],
         )
     else:
-        con = sqlite3.connect(DemoDB)
+        con = sqlite3.connect(IntegrationDB)
+        user_id = con.execute(
+            "SELECT user_id FROM DEMOusers WHERE username = ?", ("admin",)
+        ).fetchone()[0]
         con.execute(
-            "INSERT INTO ResultList (user_id,book_id,date,Title,collect,uncollect,accuracy,RD,favo) VALUES (?,?,?,?,?,?,?,?,?)",
-            [1, book_id, date, Title, collect, uncollect, accuracy, RD, favo],
+            "INSERT INTO DEMOResultList (user_id,book_id,date,Title,collect,uncollect,accuracy,RD,favo) VALUES (?,?,?,?,?,?,?,?,?)",
+            [user_id, book_id, date, Title, collect, uncollect, accuracy, RD, favo],
         )
     con.commit()
     con.close
@@ -705,11 +710,11 @@ def delcheck():
                 "SELECT * FROM ResultList WHERE user_id = ?", (user_id,)
             ).fetchall()
         else:
-            con = sqlite3.connect(DemoDB)
+            con = sqlite3.connect(IntegrationDB)
             cursor = con.cursor()
             for item in checkitems:
-                cursor.execute("DELETE FROM ResultList WHERE date = ?", (item,))
-            R_db = con.execute("SELECT * FROM ResultList").fetchall()
+                cursor.execute("DELETE FROM DEMOResultList WHERE date = ?", (item,))
+            R_db = con.execute("SELECT * FROM DEMOResultList").fetchall()
         con.commit()
         con.close()
 
@@ -738,62 +743,9 @@ def resultlist():
 
 @app.route("/Glossary", methods=["GET", "POST"])
 def Glossary():
-    con = sqlite3.connect(glossary)
+    con = sqlite3.connect(IntegrationDB)
     con.row_factory = sqlite3.Row
     cursor = con.cursor()
-
-    con.execute(
-        """
-        CREATE TABLE IF NOT EXISTS glossary (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT,
-            reading TEXT,
-            description TEXT UNIQUE
-        );
-    """
-    )
-
-    con.execute(
-        """
-        CREATE TABLE IF NOT EXISTS tags(
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            tag TEXT UNIQUE
-        );
-    """
-    )
-
-    con.execute(
-        """
-        CREATE TABLE IF NOT EXISTS LargeTags(
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            LargeTag TEXT UNIQUE
-        );
-    """
-    )
-
-    con.execute(
-        """
-        CREATE TABLE IF NOT EXISTS glossary_tags(
-            glossary_id INTEGER,
-            tag_id INTEGER,
-            FOREIGN KEY (glossary_id) REFERENCES glossary (id),
-            FOREIGN KEY (tag_id) REFERENCES tags (id),
-            PRIMARY KEY (glossary_id, tag_id)
-        );
-    """
-    )
-
-    con.execute(
-        """
-        CREATE TABLE IF NOT EXISTS LargeTags_tags(
-            LargeTag_id INTEGER,
-            tag_id INTEGER,
-            FOREIGN KEY (LargeTag_id) REFERENCES LargeTags (id),
-            FOREIGN KEY (tag_id) REFERENCES tags (id),
-            PRIMARY KEY (LargeTag_id, tag_id)
-        );
-    """
-    )
 
     cursor.execute(
         """
@@ -877,7 +829,7 @@ def filein():
     file = pd.read_csv(file_path, encoding=enco)
     print("file:", file)
 
-    con = sqlite3.connect(glossary)
+    con = sqlite3.connect(IntegrationDB)
 
     for index, row in file.iterrows():
         if filename == "G検定用語集.csv":
@@ -985,9 +937,31 @@ def userregist():
             userlist = cursor.fetchall()
             session["userlist"] = userlist
             con.commit()
+
         return jsonify({"message": "User registered successfully"}), 200
     except sqlite3.Error as e:
         return jsonify({"error": f"Database error: {str(e)}"}), 500
+
+
+@app.route("/deluser", methods=["POST"])
+def deluser():
+    data = request.get_json()
+    checkitems = data.get("checkitems", [])
+    print("checkitems:", checkitems)
+    if not data:
+        return jsonify({"error": "Invalid data"}), 400
+    else:
+        if "user_id" in session:
+            con = sqlite3.connect(IntegrationDB)
+            cursor = con.cursor()
+            for item in checkitems:
+                cursor.execute("DELETE FROM users WHERE username = ?", (item,))
+            session["userlist"] = cursor.execute(
+                "SELECT user_id,username,role FROM users"
+            ).fetchall()
+            con.commit()
+            con.close()
+    return jsonify({"message": "削除完了", "redirect_url": "/db"})
 
 
 @app.route("/logout", methods=["GET"])
