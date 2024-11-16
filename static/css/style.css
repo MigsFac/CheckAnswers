@@ -384,11 +384,14 @@ li.numb{ cursor: pointer;}
 
 .login{text-decoration-line:underline;cursor:pointer;justify-self:end;}
 .userlist{
+    text-align:center;
     display:grid;
-    grid-template-columns:repeat(3,1fr);
-    .list_userid{grid-column:1;}
-    .list_username{grid-column:2;}
-    .list_role{grid-column:3;}
+    grid-template-columns:30px 2fr 3fr 2fr;
+    margin:1.5rem;
+    .list_check{grid-column:1;transform:scale(0.5);}
+    .list_userid{grid-column:2;}
+    .list_username{grid-column:3;}
+    .list_role{grid-column:4;}
 }
 .listtitle{background-color:rgb(212, 214, 233);}
 .BookList{
