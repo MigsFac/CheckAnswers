@@ -481,6 +481,7 @@ li.numb{ cursor: pointer;}
 .collectuncollect{
     display:grid;
     grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+    margin:1.5rem 0;
 }
 #htimer , #mtimer{display:none;}
 .timerflag{text-align:center;}
