@@ -6,10 +6,12 @@ import numpy as np
 import sqlite3, math, json, os, chardet
 from werkzeug.security import generate_password_hash, check_password_hash
 
-print("views.py is here")
-DataBase = "database.db"
-ResultData = "resultDB.db"
-IntegrationDB = "IntegrationDB.db"
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+DATABASE_DIR = os.path.join(BASE_DIR, "database")
+
+IntegrationDB = os.path.join(DATABASE_DIR, "IntegrationDB.db")
+DemoDB = os.path.join(DATABASE_DIR, "DemoDB.db")
+glossary = os.path.join(DATABASE_DIR, "glossary.db")
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"
@@ -68,23 +70,20 @@ def TestQA():
     else:
         session.clear()
     questions = 1  # 問目
+
     if "user_id" in session:
         con = sqlite3.connect(IntegrationDB)
         BT_db = con.execute(
             "SELECT * FROM BookTitle WHERE user_id =?", (session["user_id"]["user_id"],)
         ).fetchall()
     else:
-        con = sqlite3.connect(DataBase)
+        con = sqlite3.connect(DemoDB)
         BT_db = con.execute("SELECT * FROM BookTitle").fetchall()
     con.close()
 
     BookTitle = []
-    if "user_id" in session:
-        for row in BT_db:
-            BookTitle.append({"Title": row[2], "qnum": row[3], "collectans": row[4]})
-    else:
-        for row in BT_db:
-            BookTitle.append({"Title": row[0], "qnum": row[1], "collectans": row[2]})
+    for row in BT_db:
+        BookTitle.append({"Title": row[2], "qnum": row[3], "collectans": row[4]})
 
     if "questions" not in session:
         session["questions"] = questions
@@ -101,6 +100,8 @@ def db():
         user_DB = con.execute(
             "SELECT * FROM BookTitle WHERE user_id =?", (session["user_id"]["user_id"],)
         ).fetchall()
+        userlist = con.execute("SELECT user_id,username,role FROM users").fetchall()
+        session["userlist"] = userlist
         con.close()
         BookTitle = []
         for row in user_DB:
@@ -119,16 +120,16 @@ def register():
     collectans = request.form["collectans"]
     check = request.form.getlist("check")
     action = request.form.get("action")
-    print("check:", check)
+
     if action == "del":
         if check:
             if "user_id" in session:
                 user_id = session["user_id"]["user_id"]
-                print("user_id:", user_id)
+
                 con = sqlite3.connect(IntegrationDB)
                 cur = con.cursor()
                 for i in check:
-                    print("i:", i)
+
                     cur.execute(
                         "DELETE FROM BookTitle WHERE Title = ? AND user_id =?",
                         (i, user_id),
@@ -140,7 +141,7 @@ def register():
                 ).fetchall()
                 con.close()
             else:
-                con = sqlite3.connect(DataBase)
+                con = sqlite3.connect(DemoDB)
                 cursor = con.cursor()
                 for i in check:
                     cursor.execute("DELETE FROM BookTitle WHERE Title = ?", (i,))
@@ -149,7 +150,7 @@ def register():
                 con.close()
             Bdb = []
             for row in db:
-                Bdb.append({"Title": row[0], "qnum": row[1], "collectans": row[2]})
+                Bdb.append({"Title": row[2], "qnum": row[3], "collectans": row[4]})
             session["BookTitle"] = Bdb
         return redirect(url_for("db"))
     elif action == "regist":
@@ -165,20 +166,19 @@ def register():
                 (session["user_id"]["user_id"],),
             ).fetchall()
             con.close()
-        else:  # ひとまずデモ用にログインしてないときは前のデータベース使用
-            con = sqlite3.connect(DataBase)
+        else:  # ひとまずデモ用にログインしてないときはデモデータベース（ユーザーadminのみでログインなし）使用
+            con = sqlite3.connect(DemoDB)
             con.execute(
-                "INSERT INTO BookTitle VALUES(?,?,?)", [Title, qnum, collectans]
+                "INSERT INTO BookTitle (user_id,Title,qnum,collectans) VALUES(?,?,?,?)",
+                [1, Title, qnum, collectans],
             )
             con.commit()
             db = con.execute("SELECT * FROM BookTitle").fetchall()
             con.close()
         Bdb = []
         for row in db:
-            if "user_id" in session:
-                Bdb.append({"Title": row[2], "qnum": row[3], "collectans": row[4]})
-            else:
-                Bdb.append({"Title": row[0], "qnum": row[1], "collectans": row[2]})
+            Bdb.append({"Title": row[2], "qnum": row[3], "collectans": row[4]})
+
         session["BookTitle"] = Bdb
         return redirect(url_for("db"))
     return redirect(url_for("db"))
@@ -422,7 +422,6 @@ def result():
         Listinit = [MapList, FilterList]
         Listinit = json.dumps(Listinit)
         ResultFlat = ResultMap1D
-        print("Listinit:", Listinit)
 
         session["result"] = {
             "cossim": cossim,
@@ -460,6 +459,7 @@ def Question():
             "SELECT * FROM BookTitle WHERE user_id=?", (user_id,)
         ).fetchall()
         con.close()
+        bookid = bookid or []
         book_id = None
         for bi in bookid:
             if selectBT == bi[2]:  # 2title
@@ -479,19 +479,27 @@ def Question():
                 }
             )
     else:
-        con = sqlite3.connect(ResultData)
+        con = sqlite3.connect(DemoDB)
         R_db = con.execute("SELECT * FROM ResultList").fetchall()
+        bookid = con.execute("SELECT * FROM BookTitle").fetchall()
         con.close()
+        book_id = None
+        bookid = bookid or []
+        for bi in bookid:
+            if selectBT == bi[2]:  # 2title
+                book_id = bi[0]  # 0book_id
+        if book_id is not None:
+            session["book_id"] = book_id
         for row in R_db:
             Rdb.append(
                 {
-                    "date": row[0],
-                    "title": row[1],
-                    "collect": row[2],
-                    "uncollect": row[3],
-                    "accuracy": row[4],
-                    "RD": row[5],
-                    "favo": row[6],
+                    "date": row[3],
+                    "title": row[4],
+                    "collect": row[5],
+                    "uncollect": row[6],
+                    "accuracy": row[7],
+                    "RD": row[8],
+                    "favo": row[9],
                 }
             )
     session["Rdb"] = Rdb
@@ -520,15 +528,13 @@ def Que2nd():
 
     if request.json.get("prepos") == "preQ":
         questions = questions - 1
-        print("ここはpreQ")
+
     elif request.json.get("prepos") == "postQ":
         questions = questions + 1
-        print("ここはpostQ")
 
     session["questions"] = questions
     session["myans"] = myans
     session["favo"] = favo
-    print("question:", session["questions"])
 
     return render_template("Question.html")
 
@@ -555,8 +561,6 @@ def saveradio():
         myans[session["questions"]] = None
     session["myans[questions]"] = myans
 
-    print("myans:", myans)
-    print("question:", session["questions"])
     return jsonify(success=True)
 
 
@@ -583,8 +587,6 @@ def setnum():
         except ValueError as e:
             return jsonify({"errorval": str(e)}), 400
 
-        print("questions:", questions)
-
         session["questions"] = questions
         return redirect(url_for("dummy"))
     except Exception as e:
@@ -601,7 +603,7 @@ def dummy():
 def score():
     print("now scoring")
     scoring = request.get_json().get("scoring")
-    print("scoring:", scoring)
+
     collect = 0
     uncollect = 0
     Accuracy = 0
@@ -617,9 +619,6 @@ def score():
 
         ans = list(str(collectans))
 
-        print("myans:", myans)
-        print("ans:", ans)
-        print("myans len:", len(myans), "ans len:", len(ans))
         for i in range(len(myans)):
             if i + 1 <= len(ans):
                 if str(myans[i + 1]) != ans[i]:
@@ -629,7 +628,6 @@ def score():
                     collect = collect + 1
         Accuracy = collect / (collect + uncollect)
         Accuracy = round(Accuracy * 100, 1)
-        print("collect:", collect, "uncollect:", uncollect, "accuracy:", Accuracy)
 
         result_data = {
             "Accuracy": Accuracy,
@@ -637,7 +635,6 @@ def score():
             "uncollect": uncollect,
             "resultscore": resultscore,
         }
-        print("resultscore:", resultscore)
         redirect_url = "/resultscore"
         session["result_data"] = result_data
 
@@ -667,10 +664,12 @@ def savelist():
     if "user_id" in session:
         user_id = session["user_id"]["user_id"]
         book_id = session["book_id"]
+    else:
+        book_id = session["book_id"]
 
     now = datetime.now()
     date = now.strftime("%Y/%m/%d %H:%M:%S")
-    print("user_id:", user_id, "book_id:", book_id)
+    print("book_id:", book_id)
     if "user_id" in session:
         con = sqlite3.connect(IntegrationDB)
         con.execute(
@@ -678,10 +677,10 @@ def savelist():
             [user_id, book_id, date, Title, collect, uncollect, accuracy, RD, favo],
         )
     else:
-        con = sqlite3.connect(ResultData)
+        con = sqlite3.connect(DemoDB)
         con.execute(
-            "INSERT INTO ResultList VALUES(?,?,?,?,?,?,?)",
-            [date, Title, collect, uncollect, accuracy, RD, favo],
+            "INSERT INTO ResultList (user_id,book_id,date,Title,collect,uncollect,accuracy,RD,favo) VALUES (?,?,?,?,?,?,?,?,?)",
+            [1, book_id, date, Title, collect, uncollect, accuracy, RD, favo],
         )
     con.commit()
     con.close
@@ -705,9 +704,8 @@ def delcheck():
             R_db = con.execute(
                 "SELECT * FROM ResultList WHERE user_id = ?", (user_id,)
             ).fetchall()
-            print("R_db:", R_db)
         else:
-            con = sqlite3.connect(ResultData)
+            con = sqlite3.connect(DemoDB)
             cursor = con.cursor()
             for item in checkitems:
                 cursor.execute("DELETE FROM ResultList WHERE date = ?", (item,))
@@ -716,32 +714,19 @@ def delcheck():
         con.close()
 
         Rdb = []
-        if "user_id" in session:
-            for row in R_db:
-                Rdb.append(
-                    {
-                        "date": row[3],
-                        "title": row[4],
-                        "collect": row[5],
-                        "uncollect": row[6],
-                        "accuracy": row[7],
-                        "RD": row[8],
-                        "favo": row[9],
-                    }
-                )
-        else:
-            for row in R_db:
-                Rdb.append(
-                    {
-                        "date": row[0],
-                        "title": row[1],
-                        "collect": row[2],
-                        "uncollect": row[3],
-                        "accuracy": row[4],
-                        "RD": row[5],
-                        "favo": row[6],
-                    }
-                )
+        for row in R_db:
+            Rdb.append(
+                {
+                    "date": row[3],
+                    "title": row[4],
+                    "collect": row[5],
+                    "uncollect": row[6],
+                    "accuracy": row[7],
+                    "RD": row[8],
+                    "favo": row[9],
+                }
+            )
+
         session["Rdb"] = Rdb
         return jsonify({"message": "削除完了", "redirect_url": "/resultlist"})
 
@@ -753,7 +738,7 @@ def resultlist():
 
 @app.route("/Glossary", methods=["GET", "POST"])
 def Glossary():
-    con = sqlite3.connect("glossary.db")
+    con = sqlite3.connect(glossary)
     con.row_factory = sqlite3.Row
     cursor = con.cursor()
 
@@ -868,7 +853,6 @@ def Glossary():
         if tagname:
             Ltagtag[Ltagname]["tag"].append(tagname)
 
-    print("Ltaglist:", Ltaglist)
     return render_template(
         "Glossary.html",
         terms=terms,
@@ -889,13 +873,12 @@ def filein():
     with open(file_path, "rb") as f:
         res = chardet.detect(f.read())
         enco = res["encoding"]
-        print(f"encoding: {enco}")
+
     file = pd.read_csv(file_path, encoding=enco)
     print("file:", file)
 
-    con = sqlite3.connect("glossary.db")
+    con = sqlite3.connect(glossary)
 
-    print("file:", file)
     for index, row in file.iterrows():
         if filename == "G検定用語集.csv":
             cursor = con.execute(
@@ -981,7 +964,7 @@ def userregist():
     username = data.get("username")
     password = data.get("password")
     rolecheck = data.get("rolecheck")
-    print("user:", username, "pass:", password, "role:", rolecheck)
+
     if rolecheck == True:
         role = "admin"
     else:
@@ -991,14 +974,16 @@ def userregist():
         return jsonify({"error": "Invalid input"}), 400
 
     hashed_pass = generate_password_hash(password)
-    print("user:", username, "pass:", password, "hashpass:", hashed_pass, "role:", role)
     try:
-        with sqlite3.connect("IntegrationDB.db") as con:
+        with sqlite3.connect(IntegrationDB) as con:
             cursor = con.cursor()
             cursor.execute(
                 "INSERT INTO users (username,password,role) VALUES (?,?,?)",
                 (username, hashed_pass, role),
             )
+            cursor.execute("SELECT user_id,username,role FROM users")
+            userlist = cursor.fetchall()
+            session["userlist"] = userlist
             con.commit()
         return jsonify({"message": "User registered successfully"}), 200
     except sqlite3.Error as e:
@@ -1023,7 +1008,7 @@ def login():
     if not username or not password:
         return jsonify({"error": "Invalid input"}), 400
 
-    con = sqlite3.connect("IntegrationDB.db")
+    con = sqlite3.connect(IntegrationDB)
     cursor = con.cursor()
     cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
     user = cursor.fetchone()
@@ -1036,7 +1021,7 @@ def login():
 
     if user and check_password_hash(user[2], password):
         session["user_id"] = {"user_id": user[0], "username": user[1], "role": user[3]}
-        print("session user_id:", session["user_id"])
+
         return (
             jsonify({"message": "ログインに成功しました。", "redirect_url": "/TestQA"}),
             200,
