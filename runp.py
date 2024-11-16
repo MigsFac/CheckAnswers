@@ -3,7 +3,7 @@ from views import app
 
 # import redis
 # app = Flask(__name__)
-# app.config.from_object("config")
+app.config.from_object("config")
 
 # app.config['SESSION_TYPE'] = 'redis'
 # app.config['SESSION_PERMANENT'] = False
