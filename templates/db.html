@@ -72,6 +72,7 @@
                       
                      {% if session['userlist'] %}
                         {% for list in session['userlist'] %}
+                            <input type="checkbox" class="list_check" name="list_del" value="{{list[1]}}">
                             <div class="list_userid">{{list[0]}}</div>
                             <div class="list_username">{{list[1]}}</div>
                             <div class="list_role">{{list[2]}}</div>
@@ -81,6 +82,7 @@
                 </div>
 
                 <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" onclick="deleteUser()">削除</button>
                     <button type="button" class="btn btn-primary" onclick="registerUser()">登録</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
                 </div>
@@ -90,6 +92,49 @@
 
 
     <script>
+    //モーダルの削除ボタン
+    async function deleteUser(){
+        let conf = confirm("登録されてるデータも消えます。本当に削除してよろしいですか？");
+        if (conf){
+            let delcheck = document.getElementsByName('list_del');
+            let checkitems = [];
+            for (let i =0; i < delcheck.length;i++){
+                if(delcheck[i].checked){
+                    checkitems.push(delcheck[i].value);
+                    if(delcheck[i].value =="admin" || delcheck[i].value =="mig" || delcheck[i].value =="guest"){
+                        alert("guest、admin、migは削除できません。")
+                        return false;
+                    }
+                }
+            }
+            fetch('/deluser',{
+                method: 'POST',
+                headers:{
+                    'Content-Type':'application/json',
+                    'X-CSRFToken':'{{ csrf_token }}'
+                },
+                body: JSON.stringify({ checkitems:checkitems })
+            })
+        .then(response =>{
+            if(response.ok){
+                return response.json();
+                console.log('deluser response ok')
+            } else {
+                console.error('deluser request error:',response.statusText);
+                alert("削除に失敗しました。")
+            }
+        })
+        .then(data => {
+            if(data.redirect_url){
+                window.location.href = data.redirect_url;
+            }
+        })
+        .catch(error =>{
+            console.error('fetch error:',error);
+        })
+        }
+           
+    };
     //モーダルの登録ボタンでsubmit
     async function registerUser(){
         const username = document.getElementById("username").value;
