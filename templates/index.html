@@ -6,7 +6,7 @@
     <p>G検定用の自分学習用のホームページです。</p>
     <p>html,css,javascript,pythonの勉強も兼ねてます。</p><br>
     <div class="indexblock">
-        <a href="{{ url_for('Calculator') }}" class="aheading">G検定用計算機</a><br>
+        <a href="{{ url_for('main.Calculator') }}" class="aheading">G検定用計算機</a><br>
         <div class="image-gallery">
          <img src="{{ url_for('static', filename='images/cosin.png')}}" class="mathintro">
          <img src="{{ url_for('static', filename='images/euclid.png')}}" class="mathintro">
@@ -19,11 +19,11 @@
     <div class="indexblock">
         <div class="image-galleryG">
            <div class="row1">
-            <a href="{{ url_for('Gchrono') }}" class="aheading gt1">G検定年表</a>
-            <a href="{{ url_for('Gquotes') }}" class="aheading gt2">名言集</a>
-            <a href="{{ url_for('dataset') }}" class="aheading gt3">データセット</a>
-            <a href="{{ url_for('AIethics') }}" class="aheading gt4">AI倫理</a>
-            <a href="{{ url_for('GLevel') }}" class="aheading gt5">レベル・区分</a>
+            <a href="{{ url_for('main.Gchrono') }}" class="aheading gt1">G検定年表</a>
+            <a href="{{ url_for('main.Gquotes') }}" class="aheading gt2">名言集</a>
+            <a href="{{ url_for('main.dataset') }}" class="aheading gt3">データセット</a>
+            <a href="{{ url_for('main.AIethics') }}" class="aheading gt4">AI倫理</a>
+            <a href="{{ url_for('main.GLevel') }}" class="aheading gt5">レベル・区分</a>
            </div>
 
            <div class="row2">
@@ -46,7 +46,7 @@
     </div>
 
     <div class="indexblock">
-        <a href="{{ url_for('Glossary')}}" class="aheading">用語集</a>
+        <a href="{{ url_for('main.Glossary')}}" class="aheading">用語集</a>
         <div class="image-gallery">
           <img src="{{ url_for('static', filename='images/glossary1.png')}}" class="mathintro">
           <img src="{{ url_for('static', filename='images/glossary2.png')}}" class="mathintro">
@@ -55,7 +55,7 @@
     </div>
 
     <div class="indexblock">
-       <a href="{{ url_for('TestQA')}}" class="aheading">TestQA</a>
+       <a href="{{ url_for('main.TestQA')}}" class="aheading">TestQA</a>
        <div class="image-gallery">
           <img src="{{ url_for('static', filename='images/TestQA1.png')}}" class="mathintro">
           <img src="{{ url_for('static', filename='images/TestQA2.png')}}" class="mathintro">
