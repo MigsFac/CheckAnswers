@@ -1,17 +1,13 @@
 import sqlite3, os
 from werkzeug.security import generate_password_hash, check_password_hash
-
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-DATABASE_DIR = os.path.join(BASE_DIR, "database")
-
-IntegrationDB = os.path.join(DATABASE_DIR, "IntegrationDB.db")
-
-# if os.path.exists("IntegrationDB.db"):
-#    os.remove("IntegrationDB.db")
+from flask_sqlalchemy import SQLAlchemy
+from .config import Config
 
 
 # メインDB
 def create_Title():
+    IntegrationDB = Config.SQLALCHEMY_DATABASE_URI.replace("sqlite:///", "")
+
     con = sqlite3.connect(IntegrationDB)
     cur = con.cursor()
     con.execute(
