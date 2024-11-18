@@ -1,30 +1,13 @@
-from flask import Flask
-from views import app
-from flask_sqlalchemy import SQLAlchemy
-import os
-from dotenv import load_dotenv
+from app import views
+from app.initdb import create_Title
+from app import create_app
+import sys, os
 
-load_dotenv()
-# import redis
-# app = Flask(__name__)
-app.config.from_object("config")
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), "app"))
+app = create_app()
 
-
-DBSQL = SQLAlchemy(app)
-
-# app.config['SESSION_TYPE'] = 'redis'
-# app.config['SESSION_PERMANENT'] = False
-# app.config['SESSION_USE_SIGNER'] = True
-# app.config['SESSION_KEY_PREFIX'] = 'flask_session:'
-# app.config['SESSION_REDIS'] = redis.Redis(host='localhost',port=6379,db=0)
-# Session(app)
-
-
-import db
-
-db.create_Title()
+with app.app_context():
+    create_Title()
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000)
