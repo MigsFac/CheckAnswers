@@ -4,7 +4,7 @@
 
     <h1>テスト用のテスト入力</h1>
     
-   <form method ="POST" action="{{url_for('register') }}" id="inform">
+   <form method ="POST" action="{{url_for('main.register') }}" id="inform">
       <div class="BookList">
             <div class="Books">
                 <div class="dbt">Title</div>
@@ -39,7 +39,7 @@
       </div>
     </form>
     
-    <a href="{{ url_for('TestQA')}}">テストTopへ戻る</a>
+    <a href="{{ url_for('main.TestQA')}}">テストTopへ戻る</a>
 
     {# ユーザ登録モーダル #}
     <div class="modal fade" id="registModal" tabindex="-1" aria-labelledby="registModalLabel" aria-hidden="true">
