@@ -1,27 +1,33 @@
-from flask import Flask, render_template, request, jsonify, redirect, session, url_for
-
+from flask import (
+    Flask,
+    render_template,
+    request,
+    jsonify,
+    redirect,
+    session,
+    url_for,
+    Blueprint,
+)
 from datetime import datetime
 import pandas as pd
 import numpy as np
 import sqlite3, math, json, os, chardet
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_sqlalchemy import SQLAlchemy
+from .config import Config
 
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-DATABASE_DIR = os.path.join(BASE_DIR, "database")
+IntegrationDB = Config.SQLALCHEMY_DATABASE_URI.replace("sqlite:///", "")
 
-IntegrationDB = os.path.join(DATABASE_DIR, "IntegrationDB.db")
-
-app = Flask(__name__)
-app.secret_key = "your_secret_key"
+main = Blueprint("main", __name__)
 
 
-@app.route("/")
+@main.route("/")
 def index():
-    print("index here")
+
     return render_template("index.html", current_page="index")
 
 
-@app.route("/Calculator")
+@main.route("/Calculator")
 def Calculator():
     if "user_id" in session:
         keep = ["user_id", "userlist"]
@@ -33,32 +39,32 @@ def Calculator():
     return render_template("Calculator.html", current_page="Calculator")
 
 
-@app.route("/Gchrono")
+@main.route("/Gchrono")
 def Gchrono():
     return render_template("Gchrono.html", current_page="Gchrono")
 
 
-@app.route("/Gquotes")
+@main.route("/Gquotes")
 def Gquotes():
     return render_template("Gquotes.html", current_page="Gquotes")
 
 
-@app.route("/dataset")
+@main.route("/dataset")
 def dataset():
     return render_template("dataset.html", current_page="dataset")
 
 
-@app.route("/AIethics")
+@main.route("/AIethics")
 def AIethics():
     return render_template("AIethics.html", current_page="AIethics")
 
 
-@app.route("/GLevel")
+@main.route("/GLevel")
 def GLevel():
     return render_template("GLevel.html", current_page="GLevel")
 
 
-@app.route("/TestQA")
+@main.route("/TestQA")
 def TestQA():
     if "user_id" in session:
         keep = ["user_id", "userlist"]
@@ -91,7 +97,7 @@ def TestQA():
     return render_template("TestQA.html", current_page="TestQA", BookTitle=BookTitle)
 
 
-@app.route("/db")
+@main.route("/db")
 def db():
     if "user_id" in session:
         con = sqlite3.connect(IntegrationDB)
@@ -100,7 +106,7 @@ def db():
         ).fetchall()
         userlist = con.execute("SELECT user_id,username,role FROM users").fetchall()
         session["userlist"] = userlist
-        print(userlist)
+
         con.close()
         BookTitle = []
         for row in user_DB:
@@ -112,7 +118,7 @@ def db():
     return render_template("db.html", BookT=BookT)
 
 
-@app.route("/register", methods=["POST"])
+@main.route("/register", methods=["POST"])
 def register():
     Title = request.form["Title"]
     qnum = request.form["qnum"]
@@ -151,7 +157,7 @@ def register():
             for row in db:
                 Bdb.append({"Title": row[2], "qnum": row[3], "collectans": row[4]})
             session["BookTitle"] = Bdb
-        return redirect(url_for("db"))
+        return redirect(url_for("main.db"))
     elif action == "regist":
         if "user_id" in session:
             con = sqlite3.connect(IntegrationDB)
@@ -182,11 +188,11 @@ def register():
             Bdb.append({"Title": row[2], "qnum": row[3], "collectans": row[4]})
 
         session["BookTitle"] = Bdb
-        return redirect(url_for("db"))
-    return redirect(url_for("db"))
+        return redirect(url_for("main.db"))
+    return redirect(url_for("main.db"))
 
 
-@app.route("/cossim")
+@main.route("/cossim")
 def cossim():
     result = None
     if "result" not in session:
@@ -195,7 +201,7 @@ def cossim():
     return render_template("cossim.html")
 
 
-@app.route("/euclid")
+@main.route("/euclid")
 def euclid():
     result = None
     if "result" not in session:
@@ -203,7 +209,7 @@ def euclid():
     return render_template("euclid.html")
 
 
-@app.route("/confumix")
+@main.route("/confumix")
 def confumix():
     result = None
     if "result" not in session:
@@ -211,7 +217,7 @@ def confumix():
     return render_template("confumix.html")
 
 
-@app.route("/FMap")
+@main.route("/FMap")
 def FMap():
     result = None
     selectedmap = [9, 16, 25, 36]
@@ -227,7 +233,7 @@ def FMap():
     )
 
 
-@app.route("/result", methods=["POST"])
+@main.route("/result", methods=["POST"])
 def result():
     kinds = request.form.get("submit")
     cossim = None
@@ -286,7 +292,7 @@ def result():
             "Listinit": Listinit,
         }
 
-        return redirect(url_for("cossim"))
+        return redirect(url_for("main.cossim"))
 
     elif kinds == "euclid":
         ab123 = ["a1", "a2", "a3", "b1", "b2", "b3"]
@@ -319,7 +325,7 @@ def result():
             "parainit": parainit,
             "Listinit": Listinit,
         }
-        return redirect(url_for("euclid"))
+        return redirect(url_for("main.euclid"))
 
     elif kinds == "confumix":
         TNFP = ["TP", "FN", "FP", "TN"]
@@ -365,7 +371,7 @@ def result():
             "parainit": parainit,
             "Listinit": Listinit,
         }
-        return redirect(url_for("confumix"))
+        return redirect(url_for("main.confumix"))
 
     elif kinds == "FM":
         padding = int(request.form.get("pad"))
@@ -438,10 +444,10 @@ def result():
             "Listinit": Listinit,
         }
 
-        return redirect(url_for("FMap"))
+        return redirect(url_for("main.FMap"))
 
 
-@app.route("/Question", methods=["GET", "POST"])
+@main.route("/Question", methods=["GET", "POST"])
 def Question():
     selectBT = request.form.get("QTitle")
     session["selectBT"] = selectBT
@@ -517,12 +523,12 @@ def Question():
     if request.form.get("action") == "start":
         return render_template("Question.html")
     elif request.form.get("action") == "config":
-        return redirect(url_for("db"))
+        return redirect(url_for("main.db"))
     elif request.form.get("action") == "result":
         return render_template("resultlist.html")
 
 
-@app.route("/Que2nd", methods=["GET", "POST"])
+@main.route("/Que2nd", methods=["GET", "POST"])
 def Que2nd():
     questions = session["questions"]
     myans = session["myans"]
@@ -541,7 +547,7 @@ def Que2nd():
     return render_template("Question.html")
 
 
-@app.route("/saveradio", methods=["POST"])
+@main.route("/saveradio", methods=["POST"])
 def saveradio():
     data = request.json
     selected_radio = data.get("selectedRadio")
@@ -566,7 +572,7 @@ def saveradio():
     return jsonify(success=True)
 
 
-@app.route("/get_latest_answers", methods=["GET"])
+@main.route("/get_latest_answers", methods=["GET"])
 def get_latest_answers():
     # 必要なsessionデータを取得して返す
     myans = session["myans"]
@@ -576,7 +582,7 @@ def get_latest_answers():
     return jsonify(latest_data)
 
 
-@app.route("/setnum", methods=["POST"])
+@main.route("/setnum", methods=["POST"])
 def setnum():
     try:
         pdata = request.get_json()
@@ -590,22 +596,20 @@ def setnum():
             return jsonify({"errorval": str(e)}), 400
 
         session["questions"] = questions
-        return redirect(url_for("dummy"))
+        return redirect(url_for("main.dummy"))
     except Exception as e:
         app.logger.error(f"Error in setnum: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
 
-@app.route("/dummy")
+@main.route("/dummy")
 def dummy():
     return render_template("dummy.html")
 
 
-@app.route("/score", methods=["POST"])
+@main.route("/score", methods=["POST"])
 def score():
-    print("now scoring")
     scoring = request.get_json().get("scoring")
-
     collect = 0
     uncollect = 0
     Accuracy = 0
@@ -643,12 +647,12 @@ def score():
         return jsonify({"redirect": redirect_url})
 
 
-@app.route("/resultscore", methods=["GET", "POST"])
+@main.route("/resultscore", methods=["GET", "POST"])
 def resultscore():
     return render_template("resultscore.html")
 
 
-@app.route("/savelist", methods=["POST"])
+@main.route("/savelist", methods=["POST"])
 def savelist():
     collect = session["result_data"].get("collect")
     uncollect = session["result_data"].get("uncollect")
@@ -671,7 +675,7 @@ def savelist():
 
     now = datetime.now()
     date = now.strftime("%Y/%m/%d %H:%M:%S")
-    print("book_id:", book_id)
+
     if "user_id" in session:
         con = sqlite3.connect(IntegrationDB)
         con.execute(
@@ -693,7 +697,7 @@ def savelist():
     return jsonify({"redirect_url": "/TestQA"})
 
 
-@app.route("/delcheck", methods=["POST"])
+@main.route("/delcheck", methods=["POST"])
 def delcheck():
     data = request.get_json()
     checkitems = data.get("checkitems", [])
@@ -736,12 +740,12 @@ def delcheck():
         return jsonify({"message": "削除完了", "redirect_url": "/resultlist"})
 
 
-@app.route("/resultlist", methods=["GET", "POST"])
+@main.route("/resultlist", methods=["GET", "POST"])
 def resultlist():
     return render_template("resultlist.html")
 
 
-@app.route("/Glossary", methods=["GET", "POST"])
+@main.route("/Glossary", methods=["GET", "POST"])
 def Glossary():
     con = sqlite3.connect(IntegrationDB)
     con.row_factory = sqlite3.Row
@@ -815,19 +819,17 @@ def Glossary():
     )
 
 
-@app.route("/filein", methods=["GET", "POST"])
+@main.route("/filein", methods=["GET", "POST"])
 def filein():
     data = request.get_json()
     filename = data.get("filein")
     file_path = os.path.join("/Users/joutoushou/flask", filename)
-    print(f"Received filname: {filename}")
 
     with open(file_path, "rb") as f:
         res = chardet.detect(f.read())
         enco = res["encoding"]
 
     file = pd.read_csv(file_path, encoding=enco)
-    print("file:", file)
 
     con = sqlite3.connect(IntegrationDB)
 
@@ -910,7 +912,7 @@ def filein():
     return jsonify({"message": "file received"})
 
 
-@app.route("/userregist", methods=["POST"])
+@main.route("/userregist", methods=["POST"])
 def userregist():
     data = request.get_json()
     username = data.get("username")
@@ -943,11 +945,11 @@ def userregist():
         return jsonify({"error": f"Database error: {str(e)}"}), 500
 
 
-@app.route("/deluser", methods=["POST"])
+@main.route("/deluser", methods=["POST"])
 def deluser():
     data = request.get_json()
     checkitems = data.get("checkitems", [])
-    print("checkitems:", checkitems)
+
     if not data:
         return jsonify({"error": "Invalid data"}), 400
     else:
@@ -964,13 +966,13 @@ def deluser():
     return jsonify({"message": "削除完了", "redirect_url": "/db"})
 
 
-@app.route("/logout", methods=["GET"])
+@main.route("/logout", methods=["GET"])
 def logout():
     session.clear()
     return jsonify({"message": "ログアウト完了", "redirect_url": "/TestQA"})
 
 
-@app.route("/login", methods=["POST"])
+@main.route("/login", methods=["POST"])
 def login():
     if "user_id" not in session:
         session["user_id"] = None
