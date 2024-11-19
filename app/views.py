@@ -15,8 +15,20 @@ import sqlite3, math, json, os, chardet
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from .config import Config
-
-IntegrationDB = Config.SQLALCHEMY_DATABASE_URI.replace("sqlite:///", "")
+from sqlalchemy.exc import IntegrityError
+from app.initdb import (
+    User,
+    BookTitle,
+    ResultList,
+    DEMOUser,
+    DEMOBookTitle,
+    DEMOResultList,
+    Glossary,
+    Tags,
+    LargeTags,
+    GlossaryTags,
+    LargeTagsTags,
+)
 
 main = Blueprint("main", __name__)
 
@@ -66,6 +78,8 @@ def GLevel():
 
 @main.route("/TestQA")
 def TestQA():
+    from app import db
+
     if "user_id" in session:
         keep = ["user_id", "userlist"]
         keepdata = {key: session[key] for key in keep if key in session}
@@ -76,43 +90,52 @@ def TestQA():
     questions = 1  # 問目
 
     if "user_id" in session:
-        con = sqlite3.connect(IntegrationDB)
-        BT_db = con.execute(
-            "SELECT * FROM BookTitle WHERE user_id =?", (session["user_id"]["user_id"],)
-        ).fetchall()
+        user_id = session["user_id"]["user_id"]
+        BT_db = db.session.query(BookTitle).filter_by(user_id=user_id).all()
     else:
-        con = sqlite3.connect(IntegrationDB)
-        BT_db = con.execute("SELECT * FROM DEMOBookTitle").fetchall()
-    con.close()
+        BT_db = db.session.query(DEMOBookTitle).all()
 
-    BookTitle = []
+    BookTitlelist = []
     for row in BT_db:
-        BookTitle.append({"Title": row[2], "qnum": row[3], "collectans": row[4]})
+        BookTitlelist.append(
+            {
+                "Title": row.title,
+                "qnum": row.qnum,
+                "collectans": row.collectans,
+            }
+        )
 
     if "questions" not in session:
         session["questions"] = questions
     if "BookTitle" not in session:
-        session["BookTitle"] = BookTitle
+        session["BookTitle"] = BookTitlelist
 
-    return render_template("TestQA.html", current_page="TestQA", BookTitle=BookTitle)
+    return render_template(
+        "TestQA.html", current_page="TestQA", BookTitlelist=BookTitlelist
+    )
 
 
 @main.route("/db")
 def db():
+    from app import db
+
     if "user_id" in session:
-        con = sqlite3.connect(IntegrationDB)
-        user_DB = con.execute(
-            "SELECT * FROM BookTitle WHERE user_id =?", (session["user_id"]["user_id"],)
-        ).fetchall()
-        userlist = con.execute("SELECT user_id,username,role FROM users").fetchall()
+        user_id = session["user_id"]["user_id"]
+        user_DB = db.session.query(BookTitle).filter_by(user_id=user_id).all()
+        userlist = db.session.query(User.user_id, User.username, User.role).all()
+        userlist = [
+                {'user_id':row[0],'username':row[1],'role':row[2]}
+                for row in userlist
+        ]
         session["userlist"] = userlist
 
-        con.close()
-        BookTitle = []
+        BookTitlelist = []
         for row in user_DB:
-            BookTitle.append({"Title": row[2], "qnum": row[3], "collectans": row[4]})
+            BookTitlelist.append(
+                {"Title": row.title, "qnum": row.qnum, "collectans": row.collectans}
+            )
 
-        session["BookTitle"] = BookTitle
+        session["BookTitle"] = BookTitlelist
 
     BookT = session.get("BookTitle", [])
     return render_template("db.html", BookT=BookT)
@@ -120,7 +143,9 @@ def db():
 
 @main.route("/register", methods=["POST"])
 def register():
-    Title = request.form["Title"]
+    from app import db
+
+    title = request.form["Title"]
     qnum = request.form["qnum"]
     collectans = request.form["collectans"]
     check = request.form.getlist("check")
@@ -130,62 +155,52 @@ def register():
         if check:
             if "user_id" in session:
                 user_id = session["user_id"]["user_id"]
-
-                con = sqlite3.connect(IntegrationDB)
-                cur = con.cursor()
-                for i in check:
-
-                    cur.execute(
-                        "DELETE FROM BookTitle WHERE Title = ? AND user_id =?",
-                        (i, user_id),
-                    )
-                con.commit()
-                db = con.execute(
-                    "SELECT * FROM BookTitle WHERE user_id=?",
-                    (user_id,),
-                ).fetchall()
-                con.close()
+                db.session.query(BookTitle).filter(
+                    BookTitle.title.in_(check), BookTitle.user_id == user_id
+                ).delete(synchronize_session=False)
+                db.session.commit()
+                book_title_db = (
+                    db.session.query(BookTitle).filter_by(user_id=user_id).all()
+                )
             else:
-                con = sqlite3.connect(IntegrationDB)
-                cursor = con.cursor()
-                for i in check:
-                    cursor.execute("DELETE FROM DEMOBookTitle WHERE Title = ?", (i,))
-                con.commit()
-                db = con.execute("SELECT * FROM DEMOBookTitle").fetchall()
-                con.close()
+                db.session.query(DEMOBookTitle).filter(
+                    DEMOBookTitle.title.in_(check),
+                ).delete(synchronize_session=False)
+                db.session.commit()
+                book_title_db = db.session.query(DEMOBookTitle).all()
             Bdb = []
-            for row in db:
-                Bdb.append({"Title": row[2], "qnum": row[3], "collectans": row[4]})
+            for row in book_title_db:
+                Bdb.append(
+                    {"Title": row.title, "qnum": row.qnum, "collectans": row.collectans}
+                )
             session["BookTitle"] = Bdb
         return redirect(url_for("main.db"))
     elif action == "regist":
         if "user_id" in session:
-            con = sqlite3.connect(IntegrationDB)
-            con.execute(
-                "INSERT INTO BookTitle (user_id,Title,qnum,collectans) VALUES(?,?,?,?)",
-                [session["user_id"]["user_id"], Title, qnum, collectans],
+            user_id = session["user_id"]["user_id"]
+            new_book = BookTitle(
+                user_id=user_id, title=title, qnum=qnum, collectans=collectans
             )
-            con.commit()
-            db = con.execute(
-                "SELECT * FROM BookTitle WHERE user_id =?",
-                (session["user_id"]["user_id"],),
-            ).fetchall()
-            con.close()
+            db.session.add(new_book)
+            db.session.commit()
+            book_title_db = db.session.query(BookTitle).filter_by(user_id=user_id).all()
+
         else:  # ひとまずデモ用にログインしてないときはデモデータベース（ユーザーadminのみでログインなし）使用
-            con = sqlite3.connect(IntegrationDB)
-            user_id = con.execute(
-                "SELECT user_id FROM DEMOusers WHERE username = ?", ("admin",)
-            ).fetchone()[0]
-            con.execute(
-                "INSERT INTO DEMOBookTitle (user_id,Title,qnum,collectans) VALUES(?,?,?,?)",
-                [user_id, Title, qnum, collectans],
+            user_id = (
+                db.session.query(DEMOUser.user_id).filter_by(username="admin").scalar()
             )
-            con.commit()
-            db = con.execute("SELECT * FROM DEMOBookTitle").fetchall()
-            con.close()
+            new_book = DEMOBookTitle(
+                user_id=user_id, title=title, qnum=qnum, collectans=collectans
+            )
+            db.session.add(new_book)
+            db.session.commit()
+            book_title_db = db.session.query(DEMOBookTitle).all()
+
         Bdb = []
-        for row in db:
-            Bdb.append({"Title": row[2], "qnum": row[3], "collectans": row[4]})
+        for row in book_title_db:
+            Bdb.append(
+                {"Title": row.title, "qnum": row.qnum, "collectans": row.collectans}
+            )
 
         session["BookTitle"] = Bdb
         return redirect(url_for("main.db"))
@@ -449,65 +464,59 @@ def result():
 
 @main.route("/Question", methods=["GET", "POST"])
 def Question():
+    from app import db
+
     selectBT = request.form.get("QTitle")
     session["selectBT"] = selectBT
-    BookTitle = session.get("BookTitle", [])
+    BookTitlelist = session.get("BookTitle", [])
     qnum = 0
-    for book in BookTitle:
+    for book in BookTitlelist:
         if selectBT == book["Title"]:
             qnum = book["qnum"]
     Rdb = []
     if "user_id" in session:
         user_id = session["user_id"]["user_id"]
-        con = sqlite3.connect(IntegrationDB)
-        R_db = con.execute(
-            "SELECT * FROM ResultList WHERE user_id=?", (user_id,)
-        ).fetchall()
-        bookid = con.execute(
-            "SELECT * FROM BookTitle WHERE user_id=?", (user_id,)
-        ).fetchall()
-        con.close()
+        R_db = db.session.query(ResultList).filter_by(user_id=user_id).all()
+        bookid = db.session.query(BookTitle).filter_by(user_id=user_id).all()
         bookid = bookid or []
         book_id = None
         for bi in bookid:
-            if selectBT == bi[2]:  # 2title
-                book_id = bi[0]  # 0book_id
+            if selectBT == bi.title:
+                book_id = bi.book_id
         if book_id is not None:
             session["book_id"] = book_id
         for row in R_db:
             Rdb.append(
                 {
-                    "date": row[3],
-                    "title": row[4],
-                    "collect": row[5],
-                    "uncollect": row[6],
-                    "accuracy": row[7],
-                    "RD": row[8],
-                    "favo": row[9],
+                    "date": row.date,
+                    "title": row.title,
+                    "collect": row.collect,
+                    "uncollect": row.uncollect,
+                    "accuracy": row.accuracy,
+                    "RD": row.rd,
+                    "favo": row.favo,
                 }
             )
     else:
-        con = sqlite3.connect(IntegrationDB)
-        R_db = con.execute("SELECT * FROM DEMOResultList").fetchall()
-        bookid = con.execute("SELECT * FROM DEMOBookTitle").fetchall()
-        con.close()
+        R_db = db.session.query(DEMOResultList).all()
+        bookid = db.session.query(DEMOBookTitle).all()
         book_id = None
         bookid = bookid or []
         for bi in bookid:
-            if selectBT == bi[2]:  # 2title
-                book_id = bi[0]  # 0book_id
+            if selectBT == bi.title:
+                book_id = bi.book_id
         if book_id is not None:
             session["book_id"] = book_id
         for row in R_db:
             Rdb.append(
                 {
-                    "date": row[3],
-                    "title": row[4],
-                    "collect": row[5],
-                    "uncollect": row[6],
-                    "accuracy": row[7],
-                    "RD": row[8],
-                    "favo": row[9],
+                    "date": row.date,
+                    "title": row.title,
+                    "collect": row.collect,
+                    "uncollect": row.uncollect,
+                    "accuracy": row.accuracy,
+                    "RD": row.rd,
+                    "favo": row.favo,
                 }
             )
     session["Rdb"] = Rdb
@@ -616,10 +625,10 @@ def score():
     resultscore = []
     if scoring == "True":
         myans = session["myans"]
-        BookTitle = session["BookTitle"]
+        BookTitlelist = session["BookTitle"]
         selectBT = session["selectBT"]
 
-        for book in BookTitle:
+        for book in BookTitlelist:
             if selectBT == book["Title"]:
                 collectans = book["collectans"]
 
@@ -654,6 +663,8 @@ def resultscore():
 
 @main.route("/savelist", methods=["POST"])
 def savelist():
+    from app import db
+
     collect = session["result_data"].get("collect")
     uncollect = session["result_data"].get("uncollect")
     accuracy = session["result_data"].get("Accuracy")
@@ -677,62 +688,78 @@ def savelist():
     date = now.strftime("%Y/%m/%d %H:%M:%S")
 
     if "user_id" in session:
-        con = sqlite3.connect(IntegrationDB)
-        con.execute(
-            "INSERT INTO ResultList (user_id,book_id,date,Title,collect,uncollect,accuracy,RD,favo) VALUES (?,?,?,?,?,?,?,?,?)",
-            [user_id, book_id, date, Title, collect, uncollect, accuracy, RD, favo],
+        user_id = session["user_id"]["user_id"]
+        new_result = ResultList(
+            user_id=user_id,
+            book_id=book_id,
+            date=date,
+            title=Title,
+            collect=collect,
+            uncollect=uncollect,
+            accuracy=accuracy,
+            rd=RD,
+            favo=favo,
         )
+        db.session.add(new_result)
+        db.session.commit()
+
     else:
-        con = sqlite3.connect(IntegrationDB)
-        user_id = con.execute(
-            "SELECT user_id FROM DEMOusers WHERE username = ?", ("admin",)
-        ).fetchone()[0]
-        con.execute(
-            "INSERT INTO DEMOResultList (user_id,book_id,date,Title,collect,uncollect,accuracy,RD,favo) VALUES (?,?,?,?,?,?,?,?,?)",
-            [user_id, book_id, date, Title, collect, uncollect, accuracy, RD, favo],
+        user_id = (
+            db.session.query(DEMOUser.user_id).filter_by(username="admin").scalar()
         )
-    con.commit()
-    con.close
+        new_result = DEMOResultList(
+            user_id=user_id,
+            book_id=book_id,
+            date=date,
+            title=Title,
+            collect=collect,
+            uncollect=uncollect,
+            accuracy=accuracy,
+            rd=RD,
+            favo=favo,
+        )
+        db.session.add(new_result)
+        db.session.commit()
 
     return jsonify({"redirect_url": "/TestQA"})
 
 
 @main.route("/delcheck", methods=["POST"])
 def delcheck():
+    from app import db
+
     data = request.get_json()
     checkitems = data.get("checkitems", [])
     if not data:
         return jsonify({"error": "Invalid pdata"}), 400
     else:
         if "user_id" in session:
-            con = sqlite3.connect(IntegrationDB)
-            cursor = con.cursor()
-            for item in checkitems:
-                cursor.execute("DELETE FROM ResultList WHERE date = ?", (item,))
             user_id = session["user_id"]["user_id"]
-            R_db = con.execute(
-                "SELECT * FROM ResultList WHERE user_id = ?", (user_id,)
-            ).fetchall()
+            db.session.query(ResultList).filter(
+                ResultList.date.in_(checkitems),
+            ).delete(synchronize_session=False)
+            db.session.commit()
+            R_db = db.session.query(ResultList).filter_by(user_id=user_id).all()
+
         else:
-            con = sqlite3.connect(IntegrationDB)
-            cursor = con.cursor()
-            for item in checkitems:
-                cursor.execute("DELETE FROM DEMOResultList WHERE date = ?", (item,))
-            R_db = con.execute("SELECT * FROM DEMOResultList").fetchall()
-        con.commit()
-        con.close()
+            db.session.query(DEMOResultList).filter(
+                DEMOResultList.date.in_(checkitems),
+            ).delete(synchronize_session=False)
+            db.session.commit()
+            R_db = db.session.query(DEMOResultList).all()
+            db.session.commit()
 
         Rdb = []
         for row in R_db:
             Rdb.append(
                 {
-                    "date": row[3],
-                    "title": row[4],
-                    "collect": row[5],
-                    "uncollect": row[6],
-                    "accuracy": row[7],
-                    "RD": row[8],
-                    "favo": row[9],
+                    "date": row.date,
+                    "title": row.title,
+                    "collect": row.collect,
+                    "uncollect": row.uncollect,
+                    "accuracy": row.accuracy,
+                    "RD": row.rd,
+                    "favo": row.favo,
                 }
             )
 
@@ -745,39 +772,36 @@ def resultlist():
     return render_template("resultlist.html")
 
 
-@main.route("/Glossary", methods=["GET", "POST"])
-def Glossary():
-    con = sqlite3.connect(IntegrationDB)
-    con.row_factory = sqlite3.Row
-    cursor = con.cursor()
+@main.route("/GlossaryPage", methods=["GET", "POST"])
+def GlossaryPage():
+    from app import db
 
-    cursor.execute(
-        """
-        SELECT g.name, g.reading, g.description, t.tag ,L.LargeTag
-        FROM glossary g
-        JOIN glossary_tags gt ON g.id = gt.glossary_id
-        JOIN LargeTags_tags Lt ON Lt.tag_id = t.id
-        JOIN tags t ON gt.tag_id = t.id
-        JOIN LargeTags L ON L.id = Lt.LargeTag_id
-        """
+    data = (
+        db.session.query(
+            Glossary.name,
+            Glossary.reading,
+            Glossary.description,
+            Tags.tag,
+            LargeTags.large_tag,
+        )
+        .join(GlossaryTags, Glossary.id == GlossaryTags.glossary_id)
+        .join(Tags, GlossaryTags.tag_id == Tags.id)
+        .join(LargeTagsTags, Tags.id == LargeTagsTags.tag_id)
+        .join(LargeTags, LargeTagsTags.large_tag_id == LargeTags.id)
+        .all()
     )
-    data = cursor.fetchall()
 
-    cursor.execute("SELECT DISTINCT tag FROM tags")  # tag一覧取得
-    tagall = cursor.fetchall()
+    tagall = db.session.query(Tags.tag).distinct().all()  # tag一覧取得
     taglist = [tag[0] for tag in tagall]
-    cursor.execute("SELECT DISTINCT LargeTag FROM LargeTags")  # LargeTag一覧取得
-    Ltagall = cursor.fetchall()
+    Ltagall = db.session.query(LargeTags.large_tag).distinct().all()  # LargeTag一覧取得
     Ltaglist = [Ltag[0] for Ltag in Ltagall]
-    cursor.execute(
-        """SELECT DISTINCT L.LargeTag, t.tag 
-                   FROM LargeTags L
-                   JOIN LargeTags_tags Lt ON Lt.LargeTag_id = L.id
-                   JOIN tags t ON t.id = Lt.tag_id
-                   """
+    tagtag = (
+        db.session.query(LargeTags.large_tag, Tags.tag)
+        .join(LargeTagsTags, LargeTagsTags.large_tag_id == LargeTags.id)
+        .join(Tags, LargeTagsTags.tag_id == Tags.id)
+        .distinct()
+        .all()
     )
-    tagtag = cursor.fetchall()
-    con.close()
 
     terms = {}
     for row in data:
@@ -821,6 +845,8 @@ def Glossary():
 
 @main.route("/filein", methods=["GET", "POST"])
 def filein():
+    from app import db
+
     data = request.get_json()
     filename = data.get("filein")
     file_path = os.path.join("/Users/joutoushou/flask", filename)
@@ -831,89 +857,77 @@ def filein():
 
     file = pd.read_csv(file_path, encoding=enco)
 
-    con = sqlite3.connect(IntegrationDB)
-
     for index, row in file.iterrows():
         if filename == "G検定用語集.csv":
-            cursor = con.execute(
-                """
-                INSERT INTO glossary (name,reading,description)
-                VALUES (?,?,?);
-                """,
-                (row["用語"], row["検索用読み"], row["説明"]),
+            new_glossary = Glossary(
+                name=row["用語"], reading=row["検索用読み"], description=row["説明"]
             )
-            glossary_id = cursor.lastrowid
+            db.session.add(new_glossary)
+            db.session.flush()
+            glossary_id = new_glossary.id
+            db.session.commit()
 
             for i in range(1, 5):
                 tag = row[f"タグ{i}"]
                 if pd.notna(tag):
                     tag = tag.strip()
-                    cursor2 = con.execute("SELECT id FROM tags WHERE tag = ?", (tag,))
-                    exist_tag = cursor2.fetchone()
+                    exist_tag = db.session.query(Tags.id).filter_by(tag=tag).scalar()
 
                     if exist_tag:
                         tag_id = exist_tag[0]
                     else:
-                        cursor2 = con.execute(
-                            """
-                            INSERT INTO tags (tag)
-                            VALUES (?);
-                            """,
-                            (tag,),
-                        )
-                        tag_id = cursor2.lastrowid
-                    con.execute(
-                        "INSERT INTO glossary_tags (glossary_id, tag_id) VALUES (?,?)",
-                        (glossary_id, tag_id),
+                        new_tag = Tags(tag=tag)
+                        db.session.add(new_tag)
+                        db.session.flush()
+                        tag_id = new_tag.id
+                    new_glossary_tag = GlossaryTags(
+                        glossary_id=glossary_id, tag_id=tag_id
                     )
+                    db.session.add(new_glossary_tag)
+                    db.session.commit()
+
         elif filename == "largetags.csv":
             LargeTag = row["ラージタグ"]
-            Tag = row["タグ"]
+            tag = row["タグ"]
             if pd.notna(LargeTag):
                 LargeTag = LargeTag.strip()
-                cursor = con.execute(
-                    "SELECT id FROM LargeTags WHERE LargeTag = ?", (LargeTag,)
+                exist_Ltag = (
+                    db.session.query(LargeTags.id)
+                    .filter_by(large_tag=LargeTag)
+                    .scalar()
                 )
-                exist_Ltag = cursor.fetchone()
 
                 if (
                     exist_Ltag
                 ):  # すでにラージタグの名称があればそのidをなければ新たに登録してそのidを取得
                     Ltag_id = exist_Ltag[0]
                 else:
-                    cursor = con.execute(
-                        """
-                    INSERT INTO LargeTags (LargeTag)
-                    VALUES (?);
-                    """,
-                        (LargeTag,),
-                    )
-                    Ltag_id = cursor.lastrowid
-                cursor2 = con.execute(
-                    "SELECT id FROM Tags WHERE Tag = ?", (Tag,)
-                )  # タグデータベースから該当のタグがあるか、あればそのidをなければエラー返す
-                exist_tag = cursor2.fetchone()
+                    new_large_tag = LargeTags(large_tag=LargeTag)
+                    db.session.add(new_large_tag)
+                    db.session.commit()
+                    db.session.flush()
+                    Ltag_id = new_large_tag.id
+                exist_tag = db.session.query(Tags.id).filter_by(tag=tag).scalar()
+
                 if exist_tag:
                     tag_id = exist_tag[0]
                 else:
-                    con.close()
                     return jsonify(
                         {
                             "message": "登録されてないタグがあります。先にタグ（用語）登録を"
                         }
                     )
-                con.execute(
-                    "INSERT INTO LargeTags_tags (LargeTag_id, tag_id) VALUES (?,?)",
-                    (Ltag_id, tag_id),
-                )
+                new_large_tag_tag = LargeTagsTags(LargeTag_id=Ltag_id, tag_id=tag_id)
+                db.session.add(new_large_tag_tag)
+                db.session.commit()
 
-    con.commit()
-    con.close()
     return jsonify({"message": "file received"})
 
 
 @main.route("/userregist", methods=["POST"])
 def userregist():
+    from app import db
+
     data = request.get_json()
     username = data.get("username")
     password = data.get("password")
@@ -929,24 +943,24 @@ def userregist():
 
     hashed_pass = generate_password_hash(password)
     try:
-        with sqlite3.connect(IntegrationDB) as con:
-            cursor = con.cursor()
-            cursor.execute(
-                "INSERT INTO users (username,password,role) VALUES (?,?,?)",
-                (username, hashed_pass, role),
-            )
-            cursor.execute("SELECT user_id,username,role FROM users")
-            userlist = cursor.fetchall()
-            session["userlist"] = userlist
-            con.commit()
-
-        return jsonify({"message": "User registered successfully"}), 200
+        new_user = User(username=username, password=hashed_pass, role=role)
+        db.session.add(new_user)
+        db.session.commit()
+        userlist = db.session.query(User.user_id, User.username, User.role).all()
+        userlist = [
+                {'user_id':row[0],'username':row[1],'role':row[2]}
+                for row in userlist
+        ]
+        session["userlist"] = userlist
+        return jsonify({"message": "User registered successfully","redirect_url":"/db"}), 200
     except sqlite3.Error as e:
         return jsonify({"error": f"Database error: {str(e)}"}), 500
 
 
 @main.route("/deluser", methods=["POST"])
 def deluser():
+    from app import db
+
     data = request.get_json()
     checkitems = data.get("checkitems", [])
 
@@ -954,15 +968,18 @@ def deluser():
         return jsonify({"error": "Invalid data"}), 400
     else:
         if "user_id" in session:
-            con = sqlite3.connect(IntegrationDB)
-            cursor = con.cursor()
-            for item in checkitems:
-                cursor.execute("DELETE FROM users WHERE username = ?", (item,))
-            session["userlist"] = cursor.execute(
-                "SELECT user_id,username,role FROM users"
-            ).fetchall()
-            con.commit()
-            con.close()
+            db.session.query(User).filter(
+                User.username.in_(checkitems),
+            ).delete(synchronize_session=False)
+            db.session.commit()
+            userlist = db.session.query(User.user_id, User.username, User.role).all()
+            userlist = [
+                {'user_id':row[0],'username':row[1],'role':row[2]}
+                for row in userlist
+            ]
+            session["userlist"] = userlist
+            
+
     return jsonify({"message": "削除完了", "redirect_url": "/db"})
 
 
@@ -974,6 +991,8 @@ def logout():
 
 @main.route("/login", methods=["POST"])
 def login():
+    from app import db
+
     if "user_id" not in session:
         session["user_id"] = None
 
@@ -984,19 +1003,22 @@ def login():
     if not username or not password:
         return jsonify({"error": "Invalid input"}), 400
 
-    con = sqlite3.connect(IntegrationDB)
-    cursor = con.cursor()
-    cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
-    user = cursor.fetchone()
-    if user[3] == "admin":
-        cursor.execute("SELECT user_id,username,role FROM users")
-        userlist = cursor.fetchall()
+    user = db.session.query(User).filter_by(username=username).scalar()
+
+    if user.role == "admin":
+        userlist = db.session.query(User.user_id, User.username, User.role).all()
+        userlist = [
+                {'user_id':row[0],'username':row[1],'role':row[2]}
+                for row in userlist
+            ]  
         session["userlist"] = userlist
 
-    con.close()
-
-    if user and check_password_hash(user[2], password):
-        session["user_id"] = {"user_id": user[0], "username": user[1], "role": user[3]}
+    if user and check_password_hash(user.password, password):
+        session["user_id"] = {
+            "user_id": user.user_id,
+            "username": user.username,
+            "role": user.role,
+        }
 
         return (
             jsonify({"message": "ログインに成功しました。", "redirect_url": "/TestQA"}),
