@@ -1,0 +1,225 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+    <h1>テスト用のテスト入力</h1>
+    
+   <form method ="POST" action="{{url_for('main.register') }}" id="inform">
+      <div class="BookList">
+            <div class="Books">
+                <div class="dbt">Title</div>
+                <div class="dbq">問題数</div>
+                <div class="dbl">答えList</div>
+            </div>
+
+            <div class="existTitle">
+                {% for i in session['BookTitle'] %} {#タイトルではなくbook_id拾いたいが、デモが使いまわせないので、タイトルのまま。登録時に重複チェック済みなので#}
+                    <input type="checkbox" id="{{ loop.index }}" class="box" value="{{ i.Title }}" name="check">
+                    <div class="inTitle">{{i.Title}}</div>
+                    <div class="inqnum center">{{i.qnum}}</div>
+                    <div class="inalist">{{i.collectans}}</div>
+                {% endfor %}
+            </div>
+
+           <div class="Bookin">
+             <input class="dbt" type="text" name="Title">
+             <input class="dbq" type="text" name="qnum">
+             <input class="dbl" type="text" name="collectans">
+           </div>
+      </div>
+      <div class="reg">
+         <input type="submit" name="action" class="btn btn-primary" value="regist" id="reg">
+         <input type="submit" name="action" class="btn btn-light delbutton" value="del" id="delsub"><br>
+      </div>
+
+      <div style="display:flex;justify-self:flex-end;margin:0.5rem 0;">  
+      {% if session['user_id'] and session['user_id']['role']=="admin" %}
+      <button type="button" id="userreg" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#registModal">ユーザ登録</button>
+      {% endif %}
+      </div>
+    </form>
+    
+    <a href="{{ url_for('main.TestQA')}}">テストTopへ戻る</a>
+
+    {# ユーザ登録モーダル #}
+    <div class="modal fade" id="registModal" tabindex="-1" aria-labelledby="registModalLabel" aria-hidden="true">
+        <div class="modal-dialog usermodal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="registModalLabel">ユーザ登録</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body usermodalbody">
+                    <div class="username">
+                        <label for="username">ユーザ名</label>
+                        <input type="text" id="username" required>
+                    </div>
+                    <div class="password">
+                        <label for="password">パスワード</label>
+                        <input type="text" id="password" required>
+                    </div>
+                    <div class="role">
+                        <label for="role">管理者権限付与</label>
+                        <input type="checkbox" id="role">
+                    </div>
+
+                    <div class="userlist">
+                      
+                        <div class="list_userid listtitle">ユーザID</div>
+                        <div class="list_username listtitle">ユーザ名</div>
+                        <div class="list_role listtitle">権限</div>
+                      
+                     {% if session['userlist'] %}
+                        {% for list in session['userlist'] %}
+                            <input type="checkbox" class="list_check" name="list_del" value="{{list.username}}">
+                            <div class="list_userid">{{list.user_id}}</div>
+                            <div class="list_username">{{list.username}}</div>
+                            <div class="list_role">{{list.role}}</div>
+                        {% endfor %}
+                     {% endif %}
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" onclick="deleteUser()">削除</button>
+                    <button type="button" class="btn btn-primary" onclick="registerUser()">登録</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+    //モーダルの削除ボタン
+    async function deleteUser(){
+        let conf = confirm("登録されてるデータも消えます。本当に削除してよろしいですか？");
+        if (conf){
+            let delcheck = document.getElementsByName('list_del');
+            let checkitems = [];
+            for (let i =0; i < delcheck.length;i++){
+                if(delcheck[i].checked){
+                    checkitems.push(delcheck[i].value);
+                    if(delcheck[i].value =="admin" || delcheck[i].value =="mig" || delcheck[i].value =="guest"){
+                        alert("guest、admin、migは削除できません。")
+                        return false;
+                    }
+                }
+            }
+            fetch('/deluser',{
+                method: 'POST',
+                headers:{
+                    'Content-Type':'application/json',
+                    'X-CSRFToken':'{{ csrf_token }}'
+                },
+                body: JSON.stringify({ checkitems:checkitems })
+            })
+        .then(response =>{
+            if(response.ok){
+                return response.json();
+                console.log('deluser response ok')
+            } else {
+                console.error('deluser request error:',response.statusText);
+                alert("削除に失敗しました。")
+            }
+        })
+        .then(data => {
+            if(data.redirect_url){
+                window.location.href = data.redirect_url;
+            }
+        })
+        .catch(error =>{
+            console.error('fetch error:',error);
+        })
+        }
+           
+    };
+    //モーダルの登録ボタンでsubmit
+    async function registerUser(){
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+        const role = document.getElementById("role");
+        var rolecheck = role.checked;
+
+        try {
+            const response = await fetch('/userregist',{
+                method: 'POST',
+                headers:{
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ username, password ,rolecheck})
+            });
+            const data = await response.json();
+            if(response.ok){
+                alert("登録完了");
+                const modalElement = document.getElementById('registModal');
+                const modal = bootstrap.Modal.getInstance(modalElement);
+                modal.hide();
+                if(data.redirect_url){
+                window.location.href = data.redirect_url;
+                }
+            } else {
+                if (data.error.includes("Invalid input")){
+                    alert("ユーザ名またはパスワードが入力されていません。")
+                } else if (data.error.includes("Database error")){
+                    alert("データベースエラー：すでに使われてるユーザ名です。"+ data.error);
+                } else {
+                alert("登録に失敗しました。");
+                }
+            }
+        } catch(error) {
+            console.error("エラー発生:",error);
+            alert("エラー発生");
+        }
+    }
+
+
+    //validationと削除確認
+    document.addEventListener("DOMContentLoaded",function(){
+        const dell = document.getElementById('delsub');
+        const reg = document.getElementById('reg');
+        reg.addEventListener('click',function(event){
+            const inputTitle = document.forms["inform"]["Title"].value;
+            const inputqnum = document.forms["inform"]["qnum"].value;
+            const inputcollect = document.forms["inform"]["collectans"].value.length;
+
+            const BookT = {{ BookT | tojson}};
+            const inT = document.forms["inform"]["Title"].value;
+            const isDupli = BookT.some(book =>book.Title==inT);
+            if (inputTitle == ""){
+                alert("タイトルを入力してください。");
+                event.preventDefault();
+                return false;
+            } else if(isDupli){
+                alert("すでに同じタイトル名が登録済みです。")
+                event.preventDefault();
+                return false;
+            }
+            if (!inputqnum){
+                alert("問題数を入力してください。");
+                event.preventDefault();
+                return false;
+            } else if (!inputcollect){
+                alert("答えlistを入力してください。");
+                event.preventDefault();
+                return false;
+            } else if (inputqnum != inputcollect){
+                alert("問題数と答えlistの数が一致しません。");
+                event.preventDefault();
+                return false;
+            }
+            return true;
+        });
+        
+        dell.addEventListener('click',function(event){
+            if(!confirm("本当に削除してもよろしいですか？")){
+                event.preventDefault();
+                return false;
+            }
+        });
+    });
+    </script>
+
+{% endblock %}
