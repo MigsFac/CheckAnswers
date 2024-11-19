@@ -28,7 +28,7 @@
     <div class="menu">
         <div class="Title mx-auto">
             <select class="Tselect" name="QTitle" id="QTitle">
-                {% for option in BookTitle %}
+                {% for option in BookTitlelist %}
                     <option value="{{option['Title']}}">{{ option['Title'] }}</option>
                 {% endfor %}
                 
@@ -159,13 +159,16 @@
         //タイマー開始の合図を開始クリックしたときにしたい
         const started = document.getElementById('start');
         started.addEventListener('click',() => { 
-            console.log("BookTitle:",BookTitle)
+
             if (BookTitle.options.length === 0){
                 alert("設定からTitleを作成して選択してください。")
                 event.preventDefault();
             }
-            if (timeflag.checked){
-                
+            if (timeflag.checked && htimer.value==0 && mtimer.value==0){
+                alert("タイマー使用時は時間を設定してください。");
+                event.preventDefault();
+            }
+            if (timeflag.checked){    
                 try{
                     let CountTimer = Number(htimer.value) * 3600 + Number(mtimer.value) * 60 ;//ここからタイマー用
                     let endTime = null;
@@ -182,11 +185,12 @@
                     console.log('endTime:',endTime);
 
                     startCountdown();
-                    console.log('タイマー起動してる？');
+                    
                 } catch (error){
                     console.error('タイマーの呼び出しに失敗',error);
                 }
             } else {localStorage.removeItem('endTime');};
+            
         });
 
         
