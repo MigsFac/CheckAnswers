@@ -72,10 +72,10 @@
                       
                      {% if session['userlist'] %}
                         {% for list in session['userlist'] %}
-                            <input type="checkbox" class="list_check" name="list_del" value="{{list[1]}}">
-                            <div class="list_userid">{{list[0]}}</div>
-                            <div class="list_username">{{list[1]}}</div>
-                            <div class="list_role">{{list[2]}}</div>
+                            <input type="checkbox" class="list_check" name="list_del" value="{{list.username}}">
+                            <div class="list_userid">{{list.user_id}}</div>
+                            <div class="list_username">{{list.username}}</div>
+                            <div class="list_role">{{list.role}}</div>
                         {% endfor %}
                      {% endif %}
                     </div>
@@ -157,6 +157,9 @@
                 const modalElement = document.getElementById('registModal');
                 const modal = bootstrap.Modal.getInstance(modalElement);
                 modal.hide();
+                if(data.redirect_url){
+                window.location.href = data.redirect_url;
+                }
             } else {
                 if (data.error.includes("Invalid input")){
                     alert("ユーザ名またはパスワードが入力されていません。")
