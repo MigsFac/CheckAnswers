@@ -3,8 +3,6 @@ from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 from flask_migrate import Migrate
 import os
-from .views import *
-from .initdb import create_Title
 from app.config import DevConfig, ProdConfig
 
 
@@ -28,6 +26,12 @@ def create_app():
 
     db.init_app(app)
     migrate.init_app(app, db)
+
+    with app.app_context():
+        from app import views
+        from .initdb import initialize_DB
+
+        initialize_DB(app)
 
     app.register_blueprint(views.main)
 
