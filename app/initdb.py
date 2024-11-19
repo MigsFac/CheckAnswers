@@ -2,183 +2,174 @@ import sqlite3, os
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from .config import Config
+from sqlalchemy.exc import IntegrityError
+from . import db
 
 
 # メインDB
-def create_Title():
-    IntegrationDB = Config.SQLALCHEMY_DATABASE_URI.replace("sqlite:///", "")
-
-    con = sqlite3.connect(IntegrationDB)
-    cur = con.cursor()
-    con.execute(
-        """
-        CREATE TABLE IF NOT EXISTS users (
-                user_id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-                username TEXT NOT NULL UNIQUE,
-                password TEXT NOT NULL,
-                role TEXT NOT NULL
-                );
-    """
+class User(db.Model):
+    __tablename__ = "users"
+    user_id = db.Column(db.Integer, primary_key=True, autoincrement=True, unique=True)
+    username = db.Column(
+        db.String(80),
+        nullable=False,
+        unique=True,
     )
+    password = db.Column(db.String(128), nullable=False)
+    role = db.Column(db.String(20), nullable=False)
+
+
+class BookTitle(db.Model):
+    __tablename__ = "BookTitle"
+    book_id = db.Column(db.Integer, primary_key=True, autoincrement=True, unique=True)
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey("users.user_id", ondelete="CASCADE"),
+        nullable=True,
+    )
+    title = db.Column("Title", db.String(255), nullable=True)
+    qnum = db.Column(db.Integer, nullable=True)
+    collectans = db.Column(db.Integer, nullable=True)
+
+
+class ResultList(db.Model):
+    __tablename__ = "ResultList"
+    result_id = db.Column(db.Integer, primary_key=True, autoincrement=True, unique=True)
+    book_id = db.Column(db.Integer, db.ForeignKey("BookTitle.book_id"), nullable=False)
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey("users.user_id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    date = db.Column(db.String(255), nullable=False)
+    title = db.Column("Title", db.String(255), nullable=True)
+    collect = db.Column(db.Integer, nullable=True)
+    uncollect = db.Column(db.Integer, nullable=True)
+    accuracy = db.Column(db.Integer, nullable=True)
+    rd = db.Column("RD", db.String(255), nullable=True)
+    favo = db.Column(db.String(255), nullable=True)
+
+
+class DEMOUser(db.Model):
+    __tablename__ = "DEMOusers"
+    user_id = db.Column(db.Integer, primary_key=True, autoincrement=True, unique=True)
+    username = db.Column(db.String(80), nullable=False, unique=True)
+    password = db.Column(db.String(255), nullable=False)
+    role = db.Column(db.String(20), nullable=False)
+
+
+class DEMOBookTitle(db.Model):
+    __tablename__ = "DEMOBookTitle"
+    book_id = db.Column(db.Integer, primary_key=True, autoincrement=True, unique=True)
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey("DEMOusers.user_id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    title = db.Column("Title", db.String(255), nullable=False, unique=True)
+    qnum = db.Column(db.Integer, nullable=False)
+    collectans = db.Column(db.Integer, nullable=False)
+
+
+class DEMOResultList(db.Model):
+    __tablename__ = "DEMOResultList"
+    result_id = db.Column(db.Integer, primary_key=True, autoincrement=True, unique=True)
+    book_id = db.Column(
+        db.Integer,
+        db.ForeignKey("DEMOBookTitle.book_id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey("DEMOusers.user_id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    date = db.Column(db.String(255), nullable=False)
+    title = db.Column("Title", db.String(255), nullable=True)
+    collect = db.Column(db.Integer, nullable=True)
+    uncollect = db.Column(db.Integer, nullable=True)
+    accuracy = db.Column(db.Integer, nullable=True)
+    rd = db.Column("RD", db.String(255), nullable=True)
+    favo = db.Column(db.String(255), nullable=True)
+
+
+class Glossary(db.Model):
+    __tablename__ = "glossary"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True, unique=True)
+    name = db.Column(db.String(255), nullable=False, unique=True)
+    reading = db.Column(db.String(255), nullable=False)
+    description = db.Column(db.String, nullable=False)
+
+
+class Tags(db.Model):
+    __tablename__ = "tags"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True, unique=True)
+    tag = db.Column(db.String(255), unique=True, nullable=False)
+
+
+class LargeTags(db.Model):
+    __tablename__ = "LargeTags"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    large_tag = db.Column("LargeTag", db.String(255), unique=True, nullable=False)
+
+
+class GlossaryTags(db.Model):
+    __tablename__ = "glossary_tags"
+    glossary_id = db.Column(
+        db.Integer,
+        db.ForeignKey("glossary.id", ondelete="CASCADE"),
+        primary_key=True,
+    )
+    tag_id = db.Column(
+        db.Integer, db.ForeignKey("tags.id", ondelete="CASCADE"), primary_key=True
+    )
+
+
+class LargeTagsTags(db.Model):
+    __tablename__ = "LargeTags_tags"
+    large_tag_id = db.Column(
+        "LargeTag_id",
+        db.Integer,
+        db.ForeignKey("LargeTags.id", ondelete="CASCADE"),
+        primary_key=True,
+    )
+    tag_id = db.Column(
+        db.Integer, db.ForeignKey("tags.id", ondelete="CASCADE"), primary_key=True
+    )
+
+
+def initialize_DB(app):
+
+    db.create_all()
+    # adminユーザがいない場合の追加。
+    admin_name = "admin"
+    admin_pass = "admin"
     try:
-        cur.execute("SELECT COUNT(*) FROM users WHERE username = ?", ("admin",))
-        if cur.fetchone()[0] == 0:
-            password = "admin"
-            hashed_pass = generate_password_hash(password)
-            cur.execute(
-                """
-                        INSERT INTO users(username,password,role)
-                        VALUES(?,?,?)
-                        """,
-                ("admin", hashed_pass, "admin"),
-            )
-            con.commit()
-    except:
-        print("Error m:", e)
-
-    con.execute(
-        """
-        CREATE TABLE IF NOT EXISTS BookTitle(
-                book_id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-                user_id INTEGER,
-                Title TEXT,
-                qnum,
-                collectans,
-                FOREIGN KEY (user_id) REFERENCES users (user_id)
-                );
-        """
-    )
-    con.execute(
-        """
-        CREATE TABLE IF NOT EXISTS ResultList(
-                result_id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-                book_id INTEGER,
-                user_id INTEGER,
-                date TEXT,
-                Title TEXT,
-                collect TEXT,
-                uncollect TEXT,
-                accuracy TEXT,
-                RD TEXT,
-                favo TEXT,
-                FOREIGN KEY (book_id) REFERENCES BookTitle (book_id),
-                FOREIGN KEY (user_id) REFERENCES users (user_id)
-                );
-                """
-    )
-
-    # DemoDB用
-    con.execute(
-        """
-        CREATE TABLE IF NOT EXISTS DEMOusers (
-                user_id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-                username TEXT NOT NULL UNIQUE,
-                password TEXT NOT NULL,
-                role TEXT NOT NULL
-                );
-    """
-    )
+        admin_user = User.query.filter_by(username=admin_name).first()
+        if not admin_user:
+            hashed_pass = generate_password_hash(admin_pass)
+            admin_user = User(username="admin", password=hashed_pass, role="admin")
+            db.session.add(admin_user)
+            db.session.commit()
+            print(f"Admin user added to {User}")
+        else:
+            print(f"Admin user already exists in {User}")
+    except IntegrityError as e:
+        db.session.rollback()
+        print("Error while creating admin user:", e)
 
     try:
-        cur.execute("SELECT COUNT(*) FROM DEMOusers WHERE username = ?", ("admin",))
-        if cur.fetchone()[0] == 0:
-            password = "admin"
-            hashed_pass = generate_password_hash(password)
-            cur.execute(
-                """
-                    INSERT INTO DEMOusers(username,password,role)
-                    VALUES(?,?,?)
-                    """,
-                ("admin", hashed_pass, "admin"),
+        Demoadmin_user = DEMOUser.query.filter_by(username=admin_name).first()
+        if not admin_user:
+            hashed_pass = generate_password_hash(admin_pass)
+            Demoadmin_user = DEMOUser(
+                username="admin", password=hashed_pass, role="admin"
             )
-            con.commit()
-    except Exception as e:
-        print("Error d:", e)
-
-    con.execute(
-        """
-        CREATE TABLE IF NOT EXISTS DEMOBookTitle(
-                book_id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-                user_id INTEGER,
-                Title TEXT,
-                qnum,
-                collectans,
-                FOREIGN KEY (user_id) REFERENCES users (user_id)
-                );
-        """
-    )
-    con.execute(
-        """
-        CREATE TABLE IF NOT EXISTS DEMOResultList(
-                result_id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-                book_id INTEGER,
-                user_id INTEGER,
-                date TEXT,
-                Title TEXT,
-                collect TEXT,
-                uncollect TEXT,
-                accuracy TEXT,
-                RD TEXT,
-                favo TEXT,
-                FOREIGN KEY (book_id) REFERENCES BookTitle (book_id),
-                FOREIGN KEY (user_id) REFERENCES users (user_id)
-                );
-                """
-    )
-
-    # glossaryDB
-    con.row_factory = sqlite3.Row
-    con.execute(
-        """
-        CREATE TABLE IF NOT EXISTS glossary (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT,
-            reading TEXT,
-            description TEXT UNIQUE
-        );
-    """
-    )
-
-    con.execute(
-        """
-        CREATE TABLE IF NOT EXISTS tags(
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            tag TEXT UNIQUE
-        );
-    """
-    )
-
-    con.execute(
-        """
-        CREATE TABLE IF NOT EXISTS LargeTags(
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            LargeTag TEXT UNIQUE
-        );
-    """
-    )
-
-    con.execute(
-        """
-        CREATE TABLE IF NOT EXISTS glossary_tags(
-            glossary_id INTEGER,
-            tag_id INTEGER,
-            FOREIGN KEY (glossary_id) REFERENCES glossary (id),
-            FOREIGN KEY (tag_id) REFERENCES tags (id),
-            PRIMARY KEY (glossary_id, tag_id)
-        );
-    """
-    )
-
-    con.execute(
-        """
-        CREATE TABLE IF NOT EXISTS LargeTags_tags(
-            LargeTag_id INTEGER,
-            tag_id INTEGER,
-            FOREIGN KEY (LargeTag_id) REFERENCES LargeTags (id),
-            FOREIGN KEY (tag_id) REFERENCES tags (id),
-            PRIMARY KEY (LargeTag_id, tag_id)
-        );
-    """
-    )
-    con.commit()
-    con.close()
+            db.session.add(Demoadmin_user)
+            db.session.commit()
+            print(f"Admin user added to {DEMOUser}")
+        else:
+            print(f"Admin user already exists in {DEMOUser}")
+    except IntegrityError as e:
+        db.session.rollback()
+        print("Error while creating admin user:", e)
