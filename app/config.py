@@ -7,10 +7,15 @@ class Config:
     if not SECRET_KEY:
         raise RuntimeError("SECRET_KEY is not set")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
     if os.getenv("FLASK_ENV") == "production":
         SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
     else:
-        SQLALCHEMY_DATABASE_URI = "sqlite:///app/database/IntegrationDB.db"
+        BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+        SQLALCHEMY_DATABASE_URI = (
+            f"sqlite:///{os.path.join(BASE_DIR,'database','IntegrationDB.db')}"
+        )
+        # SQLALCHEMY_DATABASE_URI = "sqlite:///app/database/IntegrationDB.db"
     DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
 
