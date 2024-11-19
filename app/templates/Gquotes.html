@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+    <h1>G検定　名言集</h1>
+    <div class="quohistory">
+        <div class="subhead">人工知能の定義</div>
+
+        <div class="name">ジョン・マッカーシー</div>
+        <div class="caption">人工知能とは、機械が知的な行動を示すことを目指す研究のことです。1956年ダートマス会議で学術分野の１つとして認められる。</div>
+        
+        <div class="name">アーサー・サミュエル</div>
+        <div class="caption">明示的にプログラムしなくても学習する能力をコンピュータに与える研究分野（機械が学習する能力）</div>
+   
+        <div class="name">松尾　豊</div>
+        <div class="caption">人工的に作られた人間のような知能、ないしはそれを作る技術。（人工知能は人間の知能を模倣するシステム）</div>
+    </div>
+
+    <div class="quohistory">
+        <div class="subhead">シンギュラリティ（技術的特異点）</div>
+        <div class="quocap">　AIが自ら人間より賢い知能を生み出すことが可能になる技術の特異点</div>
+        <div class="name">レイ・カーツワイル</div>
+        <div class="caption">2029年にAIが人間並みの知能を備え、2045年に技術的特異点が来る</div>
+   
+        <div class="name">スティーブン・ホーキング</div>
+        <div class="caption">完全な人工知能を開発できたら、人類の終焉を意味するかもしれない</div>
+
+        <div class="name">中島　秀之</div>
+        <div class="caption">人間は脳だけでなく身体を持ち、体があるからこそ判断できる事柄が多い</div>
+    </div>
+
+    <div class="theory">
+        <div class="subhead">法則・経験則</div>
+        <div class="name">バーニーおじさんのルール</div>
+        <div class="caption">必要なデータ量に関する経験則として、モデルのパラメータ数の10倍のデータ量が必要。</div>
+
+        <div class="name">モラベックのパラドックス</div>
+        <div class="caption">AIには難しい計算よりも、赤ちゃんができる知恵や運動能力の方が難しい</div>
+
+        <div class="name">ノーフリーランチの定理</div>
+        <div class="caption">あらゆる問題に高い精度を出せる汎用モデルは存在しない</div>
+
+        <div class="name">みにくいあひるの子定理</div>
+        <div class="caption">違うと思っても他のものと比べて大差ない的な</div>
+
+        <div class="name">オッカムの剃刀</div>
+        <div class="caption">ある事柄を説明するためには、必要以上に多くを仮定するべきではない。</div>
+
+    </div>
+
+
+    <a href="{{ url_for('main.index')}}">インデックスへ戻る</a>
+{% endblock %}

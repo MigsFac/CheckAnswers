@@ -1,0 +1,253 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+    <div class="login" id="login" data-bs-toggle="modal" data-bs-target="#loginModal">{% if session["user_id"] %}{{ session["user_id"]["username"] }}でログイン中{% else %}ログイン{% endif %}</div>
+    <h1>テスト用のテスト入力</h1>
+    <div class="timerconfig">
+       <input type="checkbox" class="timerflag" id="tflag" value="True">
+       <label for="tflag" class="timerflag">タイマー使用</label> 
+    
+      <select class="htimer" name="hmtimer" id="htimer">
+          <option value="0" id="htime0">0時間</option>
+          <option value="1" id="htime1">1時間</option>
+          <option value="2" id="htime2">2時間</option>
+          <option value="3" id="htime3">3時間</option>
+      </select>
+      <select class="mtimer" name="hmtimer" id="mtimer">
+          <option value="0" id="mtime0">0分</option>
+          <option value="10" id="mtime10">10分</option>
+          <option value="20" id="mtime20">20分</option>
+          <option value="30" id="mtime30">30分</option>
+          <option value="40" id="mtime40">40分</option>
+          <option value="50" id="mtime50">50分</option>
+      </select>
+    </div>
+
+    <form action="/Question" method="POST">
+    <div class="menu">
+        <div class="Title mx-auto">
+            <select class="Tselect" name="QTitle" id="QTitle">
+                {% for option in BookTitlelist %}
+                    <option value="{{option['Title']}}">{{ option['Title'] }}</option>
+                {% endfor %}
+                
+            </select>
+            
+        </div>
+        <div  class="Qsubmitbutton mx-auto" >
+            <button type="submit" class="btn btn-primary" name="action" value="start" id="start">開始する</button>
+        </div>
+        <div  class="Qconfigbutton mx-auto" >
+            <button type="submit" class="btn btn-primary" name="action" value="config">設定</button>
+        </div>
+        <div class="Qresultbutton mx-auto">
+            <button type="submit" class="btn btn-primary" name="action" value="result">結果を見る</button>
+        </div>
+
+    </div>
+    </form>
+    
+
+    <a href="{{ url_for('main.index')}}">インデックスへ戻る</a>
+
+
+{# ユーザログインモーダル #}
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog usermodal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginModalLabel">ログイン</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body usermodalbody">
+                    <div class="username">
+                        <label for="username">ユーザ名</label>
+                        <input type="text" id="username" value="guest" required>
+                    </div>
+                    <div class="password">
+                        <label for="password">パスワード</label>
+                        <input type="text" id="password" value="guest" required>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    
+                    {% if session["user_id"] %}<button type="button" class="btn btn-danger" onclick="logout()">ログアウト</button>{% endif %}
+                    <button type="button" class="btn btn-primary" onclick="loginUser()">ログイン</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        const BookTitle = document.getElementById("QTitle")
+        //ログイン
+        async function loginUser(){
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            const logincont = document.getElementById('login');
+            try{
+                const response = await fetch('/login',{
+                    method:'POST',
+                    headers:{
+                        'Content-Type':'application/json',
+                        'X-CSRFToken':'{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({username,password})
+                });
+                const data = await response.json();
+                if(response.ok){
+                    alert("ログインに成功しました。");
+                    const modalElement = document.getElementById('loginModal');
+                    const modal = bootstrap.Modal.getInstance(modalElement);
+                    modal.hide();
+                    if(data.redirect_url){
+                    window.location.href = data.redirect_url;
+                }
+                } else {
+                    if (data.error.includes("Invalid input")){
+                        alert("ユーザ名またはパスワードが入力されていません。")
+                    } else if (data.error.includes("Database error")){
+                        alert("ユーザ名またはパスワードが一致しません。")
+                    } else{
+                        alert("ログインに失敗しました。");
+                    }
+                }
+            } catch(error){
+                console.error("エラー：",error);
+                alert("エラー");
+            }
+        }
+
+        //ログアウト
+        async function logout(){
+            try{
+                const response = await fetch('/logout');
+                const data = await response.json();
+                if(response.ok){
+                    alert("ログアウトしました。");
+                    const modalElement = document.getElementById('loginModal');
+                    const modal = bootstrap.Modal.getInstance(modalElement);
+                    modal.hide();
+                    if(data.redirect_url){
+                    window.location.href = data.redirect_url;
+                    }
+                }
+            } catch (error){
+                console.error('error:',error);
+            }
+        }
+    
+        //タイマー使用のチェックボックス
+        const timeflag = document.getElementById('tflag');
+        const htimer = document.getElementById('htimer');
+        const mtimer = document.getElementById('mtimer');
+
+        timeflag.addEventListener('change',() => {
+            if(timeflag.checked){
+                htimer.style.display = 'block';
+                mtimer.style.display = 'block';
+            } else {
+                htimer.style.display = 'none';
+                mtimer.style.display = 'none';
+            }
+        });
+        //タイマー開始の合図を開始クリックしたときにしたい
+        const started = document.getElementById('start');
+        started.addEventListener('click',() => { 
+
+            if (BookTitle.options.length === 0){
+                alert("設定からTitleを作成して選択してください。")
+                event.preventDefault();
+            }
+            if (timeflag.checked && htimer.value==0 && mtimer.value==0){
+                alert("タイマー使用時は時間を設定してください。");
+                event.preventDefault();
+            }
+            if (timeflag.checked){    
+                try{
+                    let CountTimer = Number(htimer.value) * 3600 + Number(mtimer.value) * 60 ;//ここからタイマー用
+                    let endTime = null;
+                    let now = Date.now();
+                    if (!endTime || now > endTime) {
+                          endTime = now + CountTimer *1000;
+                          localStorage.setItem('endTime', endTime);
+                    }
+                    const timerElement = document.getElementById('timer');
+                    if (!timerElement){
+                         console.error('timerElementが見つかりません');
+                     }
+                    console.log('countTimer:',CountTimer);
+                    console.log('endTime:',endTime);
+
+                    startCountdown();
+                    
+                } catch (error){
+                    console.error('タイマーの呼び出しに失敗',error);
+                }
+            } else {localStorage.removeItem('endTime');};
+            
+        });
+
+        
+
+        function startCountdown(){
+            const interval = setInterval(()=>{
+                now = Date.now();
+                let remainingTime = Math.floor((endTime - now) / 1000);
+
+                let hours = Math.floor(remainingTime /3600);
+                let minutes = Math.floor((remainingTime % 3600) / 60);
+                let seconds = Math.floor(remainingTime % 60);
+    
+                hours = hours <10 ? '0' + hours : hours;
+                minutes = minutes <10 ? '0' + minutes : minutes;
+                seconds = seconds <10 ? '0' + seconds : seconds;
+    
+                timerElement.innerHTML = `${hours}:${minutes}:${seconds}` ;
+                
+    
+                if (remainingTime <= 0){
+                    clearInterval(interval);
+                    timerElement.innerHTML = "タイムアップ";
+                    localStorage.removeItem('endTime');
+                    let timeup = confirm("時間です。採点しますか？");
+                    if (timeup){
+                        
+                        fetch('/score',{
+                         method: 'POST',
+                         headers:{
+                            'Content-Type':'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'
+                         },
+                         body: JSON.stringify({ scoring: scoring })
+                        })
+                        .then(response =>{
+                            if(response.ok){
+                                return response.json();
+                            console.log('ok')
+                            } else {
+                             console.error('POST request failed:',response.statusText);
+                             }
+                        })
+                        .then(data =>{
+                         if (data.redirect){
+                             window.location.href = data.redirect;
+                         }
+                        })
+                        .catch(error => {
+                            console.error('fetch error:',error);
+                        });
+                    }
+                    else{}
+                    return;
+                }
+            }, 1000);
+        }
+    
+    </script>
+{% endblock %}

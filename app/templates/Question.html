@@ -1,0 +1,356 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    
+    <div class="TitleCount">
+      <h2 class="Title1">{{session['selectBT']}}</h2>
+      <h2 class="Title2">第　{{session['questions']}}　問目</h2>
+
+      <div class="count" id="count">残り時間</div>
+      <div class="timer" id="timer"></div>
+    </div>
+    <form action="/Que2nd" method="post" id="form">
+        <div class="postcheck">
+            <label><input type="checkbox" id="s_check" name="favo"{% if session['favo'][session['questions']] %} checked{% endif %} value="True">　後で確認する</label>
+        </div>
+        <div class="radioselect" id="s_radio">
+            <label><input type="radio" name="radioin" value="1" {% if session['myans'][session['questions']]| default('') ==1 %} checked {% endif %}>　１</label>
+            <label><input type="radio" name="radioin" value="2" {% if session['myans'][session['questions']]| default('') ==2 %} checked {% endif %}>　２</label>
+            <label><input type="radio" name="radioin" value="3" {% if session['myans'][session['questions']]| default('') ==3 %} checked {% endif %}>　３</label>
+            <label><input type="radio" name="radioin" value="4" {% if session['myans'][session['questions']]| default('') ==4 %} checked {% endif %}>　４</label>
+        </div>
+        
+        <div class="prepost">
+        <button type="button" class="btn btn-primary" ID="Pre" name="actionpp"  value="preQ" {% if session['questions'] == 1 %} disabled {% endif %}>１つ前へ</button>
+        <button type="button" class="btn btn-primary" ID="Post" name="actionpp" value="postQ"{% if session['questions'] == session['qnum'] %} disabled {% endif %}>1つ先へ</button>
+        <button type="button" class="btn btn-primary full" name="action" ID="OMB" value="Qlist" data-bs-toggle="modal" data-bs-target="#Qlist">一覧</button>
+        <button type="button" class="btn btn-secondary score" name="actions" ID="score" value="True"> 採点</button>
+        </div>
+
+    </form>   
+
+    
+    <!-- モーダル -->
+ <div class="modal fade" id="Qlist" tabindex="-1" role="dialog" aria-labelledby="QlistLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="QlistLabel">解答一覧</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <ul class="anslist" id="anslist">
+                    
+                </ul>
+            </div>
+            <div class="modal-footer">
+                ダブルクリックすると問題番号に飛びます。
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
+            </div>
+        </div>
+    </div>
+ </div>
+
+    <a href="{{ url_for('main.TestQA')}}">テストTOPへ戻る</a>
+
+    <script>//Pre,Postボタンで前、次の問題番号へ
+        document.addEventListener('DOMContentLoaded',()=>{
+            const PrePostButton = document.getElementsByName('actionpp');
+        
+            PrePostButton.forEach(button => {
+                button.addEventListener('click', function(){
+                console.log('PrePost click:');
+                const prepos = this.value;
+                fetch('/Que2nd',{
+                    method: 'POST',
+                    headers:{
+                       'Content-Type':'application/json',
+                      'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({ prepos: prepos })
+                })
+                .then(response =>{
+                   if(response.ok){
+                      
+                      window.location.reload();
+                      console.log('session_question:',{{session['questions']}});
+                    } else {
+                        console.error('POST request failed:',response.statusText);
+                    }
+                })
+                .then(data => {
+                    document.getElementById('test').textContent = session['questions']
+                })
+                
+                .catch(error => {
+                    console.error('fetch error:',error);
+                });
+                });
+            });    
+        });
+    </script>
+
+    <script>//採点
+        document.addEventListener('DOMContentLoaded',()=>{
+            const ScoreButton = document.getElementById('score');
+            ScoreButton.addEventListener('click', function(){
+                console.log('score click:');
+                let yesno = confirm("採点してもよろしいですか？");
+                if (yesno){
+                    const scoring = this.value
+                
+                    fetch('/score',{
+                      method: 'POST',
+                      headers:{
+                        'Content-Type':'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                      },
+                      body: JSON.stringify({ scoring: scoring })
+                    })
+                    .then(response =>{
+                    if(response.ok){
+                        return response.json();
+                        console.log('ok')
+                    } else {
+                        console.error('POST request failed:',response.statusText);
+                    }
+                    })
+                    .then(data =>{
+                        if (data.redirect){
+                            window.location.href = data.redirect;
+                        }
+                    })
+                    .catch(error => {
+                      console.error('fetch error:',error);
+                    });
+                }
+                else{}
+            });
+        });    
+    </script>
+
+    <script> //ラジオボタン、チェックボックスに変更あった時の更新
+        document.addEventListener('DOMContentLoaded',(event) => {
+            const saveradio = document.querySelectorAll('input[name="radioin"],input[name="favo"]');
+            const targetNode = document.getElementById('form');
+            const config = { childList: true, subtree: true};
+
+            const callback = function(mutationsList,observer){
+                for (let mutation of mutationsList){
+                    if (mutation.type === 'childList'){
+                        console.log('子要素の変更がありました');
+                    }
+                }
+            };
+            const observer = new MutationObserver(callback);
+            observer.observe(targetNode, config);
+            const target = event.target;
+            const s_radio = document.getElementsByName('radioin');
+            const s_check = document.getElementById('s_check');
+            
+            var radiochecked = Array.from(s_radio).find(radio => radio.checked);
+            if(radiochecked){
+               var selectedValue = radiochecked.value;
+            } else {selectedValue=null;}
+
+            var selectedCheck = s_check.checked;
+
+            saveradio.forEach(input => {
+                input.addEventListener('change',(event) => {
+                    console.log('type=',event.target.type)
+                    if (event.target.type ==='radio'){
+                        selectedValue = event.target.value;
+                    };
+                    if (event.target.type ==='checkbox'){                        
+                         if (s_check.checked==true){
+                            selectedCheck =true
+                         } else {
+                            selectedCheck =false
+                         }                        
+                    };
+                    console.log('targetvalue=',event.target.value)
+                    console.log('targetcheck=',event.target.checked)
+                    console.log('selected value=',selectedValue)
+                    console.log('selected check=',selectedCheck)
+
+                    fetch('/saveradio',{
+                        method: 'POST',
+                        headers:{
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ 
+                            selectedRadio: selectedValue,
+                            selectedCheck: selectedCheck,
+                         })
+                    }).then(response => {
+                        return response.json();
+                    }).then(data => {
+                        console.log('saved:',data);
+                        
+                    }).catch((error) => {
+                        console.error('error:',error);
+                    });
+                });
+            });
+        
+        });
+
+    </script>
+
+ <script>//答えリストの作成
+    document.getElementById('form').addEventListener('click', function() {
+        console.log('form? click:');
+        fetch('/get_latest_answers')  // 最新のsessionデータを取得するエンドポイント
+            .then(response => response.json())
+            .then(latest_data => {
+                
+                const answerList = document.getElementById('anslist');
+               
+                answerList.innerHTML = '';  // 既存のリストをクリア
+                
+                latest_data.myans.slice(1).forEach((answer, index) => {
+                    const listItem = document.createElement('li');
+                    if (latest_data.myans[index+1]===null){
+                        listItem.classList.add('flag');
+                    }
+                    if (latest_data.favo[index+1]){
+                        listItem.classList.add('favo');
+                    }
+                    listItem.classList.add('numb');
+                    listItem.dataset.numb_p = index + 1;
+                    listItem.innerHTML = `問${index + 1}<br><span class="item">${answer}</span>`;
+                    answerList.appendChild(listItem);
+                });
+            });
+    });
+ </script>
+
+<script>//modalから問題番号ページに飛びたい
+    document.addEventListener('DOMContentLoaded',() =>{
+    const openModalButton = document.querySelector('#Qlist'); 
+    if (openModalButton) {
+        openModalButton.addEventListener('click', bindClickEvents);
+        console.log('openModal click:');
+    }
+        });
+    function openModal(){
+        const modal = document.querySelector('#Qlist');
+        const bootstrapModal = new bootstrap.Modal(modal);
+        bootstrapModal.show();
+    }
+    function bindClickEvents(){
+        const numbers = document.querySelectorAll('#anslist .numb');
+        numbers.forEach(item => {
+        item.removeEventListener('click', handleItemClick); // 重複を避けるために解除
+        item.addEventListener('click', handleItemClick); // リスナーを追加
+        console.log('bindClickEvents');
+    });
+    }
+    function handleItemClick(event){
+            //event.preventDefault();
+            const number = this.getAttribute('data-numb_p');
+            console.log('get number:',number);
+
+            fetch('/setnum',{
+                method: 'POST',
+                headers:{
+                    'Content-Type':'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ numb: number })
+            })
+            .then(response => {
+                if(response.ok){
+                    console.log('number response ok');
+                    window.location.reload();
+                    
+                } else{
+                    console.error('POSTrequest error:',response.statusText);
+                }
+            })
+            .catch(error => {
+                console.error('error:',error);
+            });
+        }
+
+</script>
+
+<script>//タイマー表示用
+    //タイマー使わない時は非表示
+    const hcount = document.getElementById('count');
+    const tcount = document.getElementById('timer');
+    if (localStorage.getItem('endTime') !== null){
+        hcount.style.display = 'block'
+        tcount.style.display = 'block'
+    }
+
+    document.addEventListener('DOMContentLoaded',()=>{
+        const timerElement = document.getElementById('timer');
+        let endTime = localStorage.getItem('endTime');
+        const ScoreButton = document.getElementById('score')
+        let now = Date.now();
+        let remainingTime = Math.floor((endTime - now)/1000);
+        updateTimer(remainingTime);
+
+        function updateTimer(remainingTime){
+                let hours = Math.floor(remainingTime / 3600);
+                let minutes = Math.floor((remainingTime % 3600) / 60);
+                let seconds = remainingTime % 60;
+
+                hours = hours < 10 ? '0' + hours : hours;
+                minutes = minutes < 10 ? '0' + minutes : minutes;
+                seconds = seconds < 10 ? '0' + seconds : seconds;
+
+                timerElement.innerHTML = `${hours}:${minutes}:${seconds}`; // 残り時間を表示
+        }
+
+        if (endTime) {
+            const interval = setInterval(()=>{
+               now = Date.now();
+               remainingTime = Math.floor((endTime - now) / 1000); // 残り時間を秒で取得
+
+               updateTimer(remainingTime);
+
+               if (remainingTime <= 0) {
+                 timerElement.innerHTML = "タイムアップ"; // タイムアップの場合の表示
+                 clearInterval(interval);
+                 let timeup = confirm("時間です。採点しますか？");
+                 
+                 if (timeup){ 
+                        const scoring = ScoreButton.value
+                        fetch('/score',{
+                         method: 'POST',
+                         headers:{
+                            'Content-Type':'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'
+                         },
+                         body: JSON.stringify({ scoring: scoring })
+                        })
+                        .then(response =>{
+                            if(response.ok){
+                                return response.json();
+                            console.log('ok')
+                            } else {
+                             console.error('POST request failed:',response.statusText);
+                             }
+                        })
+                        .then(data =>{
+                         if (data.redirect){
+                             window.location.href = data.redirect;
+                         }
+                        })
+                        .catch(error => {
+                            console.error('fetch error:',error);
+                        });
+                    }
+                else{}
+                }
+            },1000)
+        }
+    })
+</script>
+
+
+{% endblock %}
