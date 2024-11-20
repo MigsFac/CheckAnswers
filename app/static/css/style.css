@@ -603,3 +603,9 @@ li.numb{ cursor: pointer;}
 }
 .taglist-all{cursor:pointer;margin: 0.7rem 0;background-color:rgb(214, 226, 216);border-radius:5px;}
 .atag{display:flex;gap:0.5rem;}
+.contact{text-decoration-line:underline;cursor:pointer;}
+.contactdialog{width:80%;margin:auto;
+    @media(max-width:768px){
+        width:100%;
+    }}
+.contactfade{pointer-events: none;}
