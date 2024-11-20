@@ -43,11 +43,39 @@
         {% block content %}{% endblock %}
         </div>
 
+      <!-- 問い合わせモーダル -->
+  <div class="modal fade contactfade" id="contactModal" tabindex="-1" role="dialog" aria-labelledby="contactLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog contactdialog" role="document" >
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">お問い合わせフォーム</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body"><!-- 外部フォーム-->
+               <script src="https://sdk.form.run/js/v2/embed.js"></script>
+               <div class="formrun-embed" data-formrun-form="@migsfactory-xoPPHC2kzjMrEY72dOxa">
+               </div>
+            </div>
+
+            <div class="modal-footer">
+               
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+            </div>
+        </div>
+    </div>
+ </div>
+
+
         <footer>
           <div class="footer">
-            <p>&copy; 2024 Mig's Factory</p>
+            <div class="contact" data-bs-toggle="modal" data-bs-target="#contactModal" role="button" tabindex="0">お問い合わせ</div>
+            &copy; 2024 Mig's Factory
           </div>
         </footer>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+      
     </body>
 </html>
