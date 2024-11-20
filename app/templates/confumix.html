@@ -14,7 +14,7 @@
         <form action="/result" method="post">
          <div class="container_confu">
             <div class="caption1">真陽性TP、偽陽性FP、偽陰性FN、真陰性TNとすると</div>
-            <div class="capconfu" style="font-size:180%">混合行列</div><br>
+            <div class="capconfu" style="font-size:180%">混同行列</div><br>
         
             <div class="APRF">Accuracy　正解率</div> <div class="APRF-2">\( \dfrac{TP+TN}{TP+TN+FP+FN} \)</div><div class="confres">{% if session['result'].confumix %}= {{session['result'].confumix[0]}}{% else %}{% endif %}</div>
             <div class="APRF">Precision　適合率</div> <div class="APRF-2">\( \dfrac{TP}{TP+FP} \)</div><div class="confres">{% if session['result'].confumix %}= {{session['result'].confumix[1]}}{% else %}{% endif %}</div>
