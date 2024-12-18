@@ -76,6 +76,22 @@ def GLevel():
     return render_template("GLevel.html", current_page="GLevel")
 
 
+@main.route("/supportjp")
+def supportjp():
+    return redirect(
+        "https://butternut-beetle-638.notion.site/Q-A-157ff023717a8033a9fcfcb7da55d8de?pvs=4",
+        code=301,
+    )
+
+
+@main.route("/supporten")
+def supporten():
+    return redirect(
+        "https://butternut-beetle-638.notion.site/FAQ-157ff023717a8074924cd52b4d5a1add?pvs=4",
+        code=301,
+    )
+
+
 @main.route("/TestQA")
 def TestQA():
     from app import db
@@ -124,8 +140,7 @@ def db():
         user_DB = db.session.query(BookTitle).filter_by(user_id=user_id).all()
         userlist = db.session.query(User.user_id, User.username, User.role).all()
         userlist = [
-                {'user_id':row[0],'username':row[1],'role':row[2]}
-                for row in userlist
+            {"user_id": row[0], "username": row[1], "role": row[2]} for row in userlist
         ]
         session["userlist"] = userlist
 
@@ -948,11 +963,13 @@ def userregist():
         db.session.commit()
         userlist = db.session.query(User.user_id, User.username, User.role).all()
         userlist = [
-                {'user_id':row[0],'username':row[1],'role':row[2]}
-                for row in userlist
+            {"user_id": row[0], "username": row[1], "role": row[2]} for row in userlist
         ]
         session["userlist"] = userlist
-        return jsonify({"message": "User registered successfully","redirect_url":"/db"}), 200
+        return (
+            jsonify({"message": "User registered successfully", "redirect_url": "/db"}),
+            200,
+        )
     except sqlite3.Error as e:
         return jsonify({"error": f"Database error: {str(e)}"}), 500
 
@@ -974,11 +991,10 @@ def deluser():
             db.session.commit()
             userlist = db.session.query(User.user_id, User.username, User.role).all()
             userlist = [
-                {'user_id':row[0],'username':row[1],'role':row[2]}
+                {"user_id": row[0], "username": row[1], "role": row[2]}
                 for row in userlist
             ]
             session["userlist"] = userlist
-            
 
     return jsonify({"message": "削除完了", "redirect_url": "/db"})
 
@@ -1008,9 +1024,8 @@ def login():
     if user.role == "admin":
         userlist = db.session.query(User.user_id, User.username, User.role).all()
         userlist = [
-                {'user_id':row[0],'username':row[1],'role':row[2]}
-                for row in userlist
-            ]  
+            {"user_id": row[0], "username": row[1], "role": row[2]} for row in userlist
+        ]
         session["userlist"] = userlist
 
     if user and check_password_hash(user.password, password):
