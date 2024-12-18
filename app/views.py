@@ -92,6 +92,11 @@ def supporten():
     )
 
 
+@main.route("/contact")
+def contact():
+    return redirect("https://form.run/@migsfactory-xoPPHC2kzjMrEY72dOxa", code=301)
+
+
 @main.route("/TestQA")
 def TestQA():
     from app import db
