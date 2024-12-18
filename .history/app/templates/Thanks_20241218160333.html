@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+    <h1>テスト用のテスト入力</h1>
+    
+    <h2>{{session['selectBT']}}</h2>
+    <h2>  正解率：{{session['result_data'].collect}}／{{session['result_data'].uncollect+session['result_data'].collect}}　＝　{{session['result_data'].Accuracy}}％</h2>
+    <button type="button" class="btn btn-primary savelist" ID="savelist" value="True">保存</button>
+
+    <div class="collectuncollect">
+        {% for i in session['result_data'].resultscore %}
+            <div class="uncollectlist">{{ i }}</div>
+        {% endfor %}
+    </div>
+    
+    <a href="{{ url_for('main.TestQA')}}">テストトップへ戻る</a>
+
+    <script>
+        document.addEventListener('DOMContentLoaded',()=>{
+            const SaveButton = document.getElementById('savelist');
+            SaveButton.addEventListener('click', function(){
+                let yesno = confirm("結果を保存しますか？");
+                if (yesno){
+                    const savelist = this.value
+                    fetch('/savelist',{
+                        method:'POST',
+                        headers:{
+                            'Content-Type':'application/json',
+                            'X-CSRFToken':'{{ csrf_token }}'
+                        },
+                        body: JSON.stringify({ savelist: savelist})
+                    })
+                    .then(response =>{
+                        if(response.ok){
+                            console.log('savelist response ok')
+                            return response.json();
+                        } else {
+                            console.error('POST request failed:',response.statusText);
+                        }
+                    })
+                    .then(data =>{
+                        console.log(data); 
+                        if(data.redirect_url){
+                            window.location.href = data.redirect_url;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('fetch error:',error);
+                    })
+                }
+            });
+        });
+    </script>
+{% endblock %}
