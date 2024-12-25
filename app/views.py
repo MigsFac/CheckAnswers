@@ -7,6 +7,7 @@ from flask import (
     session,
     url_for,
     Blueprint,
+    send_from_directory,
 )
 from datetime import datetime
 import pandas as pd
@@ -35,8 +36,12 @@ main = Blueprint("main", __name__)
 
 @main.route("/")
 def index():
-
     return render_template("index.html", current_page="index")
+
+
+@main.route("/app-abs.txt")
+def app_abs():
+    return send_from_directory("static", "app-abs.txt")
 
 
 @main.route("/Calculator")
