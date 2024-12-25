@@ -8,6 +8,7 @@ from flask import (
     url_for,
     Blueprint,
     send_from_directory,
+    send_file,
 )
 from datetime import datetime
 import pandas as pd
@@ -39,9 +40,9 @@ def index():
     return render_template("index.html", current_page="index")
 
 
-@main.route("/app-adqs.txt")
+@main.route("/app-ads.txt")
 def app_ads():
-    return send_from_directory("static", "app-ads.txt")
+    return send_file("app-ads.txt")
 
 
 @main.route("/Calculator")
@@ -632,7 +633,7 @@ def setnum():
         session["questions"] = questions
         return redirect(url_for("main.dummy"))
     except Exception as e:
-        app.logger.error(f"Error in setnum: {e}")
+        pdata.logger.error(f"Error in setnum: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
 
