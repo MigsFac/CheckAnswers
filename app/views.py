@@ -39,9 +39,9 @@ def index():
     return render_template("index.html", current_page="index")
 
 
-@main.route("/app-abs.txt")
-def app_abs():
-    return send_from_directory("static", "app-abs.txt")
+@main.route("/app-adqs.txt")
+def app_ads():
+    return send_from_directory("static", "app-ads.txt")
 
 
 @main.route("/Calculator")
