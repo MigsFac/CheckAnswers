@@ -42,7 +42,7 @@ def index():
 
 @main.route("/app-ads.txt")
 def app_ads():
-    return send_file("app-ads.txt")
+    return send_from_directory("static", "app-ads.txt")
 
 
 @main.route("/Calculator")
