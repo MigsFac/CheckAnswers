@@ -103,6 +103,22 @@ def contact():
     return redirect("https://form.run/@migsfactory-xoPPHC2kzjMrEY72dOxa", code=301)
 
 
+@main.route("/attendtap_privacyjp")
+def supportjp():
+    return redirect(
+        "https://butternut-beetle-638.notion.site/153ff023717a806a9907db22350efede?pvs=4",
+        code=301,
+    )
+
+
+@main.route("/attendtap_privacyen")
+def supporten():
+    return redirect(
+        "https://butternut-beetle-638.notion.site/Privacy-Policy-152ff023717a80d1a24bf4a59cefd221?pvs=4",
+        code=301,
+    )
+
+
 @main.route("/TestQA")
 def TestQA():
     from app import db
