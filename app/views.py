@@ -104,7 +104,7 @@ def contact():
 
 
 @main.route("/attendtap_privacyjp")
-def supportjp():
+def atpivacyjp():
     return redirect(
         "https://butternut-beetle-638.notion.site/153ff023717a806a9907db22350efede?pvs=4",
         code=301,
@@ -112,7 +112,7 @@ def supportjp():
 
 
 @main.route("/attendtap_privacyen")
-def supporten():
+def atprivacyen():
     return redirect(
         "https://butternut-beetle-638.notion.site/Privacy-Policy-152ff023717a80d1a24bf4a59cefd221?pvs=4",
         code=301,
