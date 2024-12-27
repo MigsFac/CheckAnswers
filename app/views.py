@@ -119,6 +119,14 @@ def atprivacyen():
     )
 
 
+@main.route("/java")
+def java():
+    return redirect(
+        "https://injectionjava-1.onrender.com",
+        code=301,
+    )
+
+
 @main.route("/TestQA")
 def TestQA():
     from app import db
