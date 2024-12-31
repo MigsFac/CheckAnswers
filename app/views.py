@@ -9,7 +9,14 @@ from flask import (
     Blueprint,
     send_from_directory,
     send_file,
+    flash,
+    current_app,
 )
+from dotenv import load_dotenv
+from flask_wtf import FlaskForm
+from flask_mail import Mail, Message
+from wtforms import StringField, TextAreaField, SubmitField, EmailField
+from wtforms.validators import DataRequired, Email, Length
 from datetime import datetime
 import pandas as pd
 import numpy as np
@@ -33,6 +40,7 @@ from app.initdb import (
 )
 
 main = Blueprint("main", __name__)
+load_dotenv()
 
 
 @main.route("/")
@@ -82,6 +90,11 @@ def GLevel():
     return render_template("GLevel.html", current_page="GLevel")
 
 
+@main.route("/AttendTap")
+def AttendTap():
+    return render_template("AttendTap.html")
+
+
 @main.route("/supportjp")
 def supportjp():
     return redirect(
@@ -115,6 +128,14 @@ def atpivacyjp():
 def atprivacyen():
     return redirect(
         "https://butternut-beetle-638.notion.site/Privacy-Policy-152ff023717a80d1a24bf4a59cefd221?pvs=4",
+        code=301,
+    )
+
+
+@main.route("/attendtap_termsjp")
+def attermsjp():
+    return redirect(
+        "https://butternut-beetle-638.notion.site/152ff023717a80d88504e94cfb12e2b9?pvs=4",
         code=301,
     )
 
@@ -1076,3 +1097,55 @@ def login():
         )
     else:
         return jsonify({"error": f"Database error: {str(sqlite3.Error)}"}), 500
+
+
+@main.context_processor
+def inject_form():
+    form = ContactForm()
+    return {"form": form}
+
+
+class ContactForm(FlaskForm):
+    name = StringField("お名前 - Name -", validators=[DataRequired(), Length(max=50)])
+    email = EmailField(
+        "メールアドレス - Email -",
+        validators=[
+            DataRequired(message="メールアドレスは必須です。"),
+            Email(message="有効なメールアドレスを入力してください"),
+        ],
+    )
+    message = TextAreaField(
+        "お問い合わせ内容 - Message -", validators=[DataRequired(), Length(max=500)]
+    )
+    submit = SubmitField(
+        "送信 - submit -", render_kw={"class": "btn btn-primary formsubmit"}
+    )
+
+
+@main.route("/contactUsForm", methods=["Get", "POST"])
+def contactUsForm():
+    if request.method == "POST":
+        form = ContactForm()
+        name = form.name.data
+        email = form.email.data
+        message = form.message.data
+
+        msg = Message("新しいお問い合わせ", recipients=["migtest@example.com"])
+        msg.body = f"問い合わせがありました。\n\n\n名前: {name}\n\nメールアドレス: {email}\n\nメッセージ:\n{message}"
+
+        mail = current_app.extensions["mail"]
+
+        try:
+            mail.send(msg)
+            return jsonify(
+                {
+                    "success": True,
+                    "message": "お問い合わせありがとうございます。\nメッセージを送信しました。",
+                }
+            )
+        except Exception as e:
+            return jsonify(
+                {"success": False, "message": f"エラーが発生しました: {str(e)}"}
+            )
+
+    return render_template("index.html")
