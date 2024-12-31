@@ -1,0 +1,114 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="attendall">
+
+<div class="attendtitle">
+    <h1 class="attendh1">AttendTap</h1>
+    <h2 class="attendh2">「勤務時間をタップで管理」</h2>
+</div>
+
+<div class="attendbody">
+
+<img src="{{ url_for('static', filename='images/AttendTapIconFeature.png')}}" class="featurepng">
+
+<div class="googleapple">
+    <!-- <a href="https://play.google.com">Google Play</a> -->
+    <a href="https://apps.apple.com/jp/app/attendtap/id6739482367" target="_blank">
+        <img src="{{ url_for('static', filename='images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg')}}" alt="Download on the App Store">
+    </a>
+</div>
+
+<section>
+    <h3>Information - 基本情報</h3>
+    <ul>
+        <li>リリース日：2024年12月19日</li>
+        <li>対応OS：iOS,(Android申請中)</li>
+    </ul>
+</section>
+
+<section>
+    <h3>Feature - 主な機能</h3>
+    <ul>
+        <li>タップで超過勤務の理由と今の時間を記録</li>
+        <li>時刻調整ボタンで任意の時間を設定</li>
+        <li>後から容易に編集可能</li>
+        <li>自由にコメント記録</li>
+        <li>記録はリスト表示とカレンダー表示</li>
+        <li>超過勤務の理由の編集・並び替えも可能</li>
+        <li>好みに合わせてテーマカラーやフォントを設定</li>
+    </ul>
+</section>
+
+<section>
+    <h3>Release notes - リリースノート</h3>
+    v1.1.0 (2024-12-24)
+    <ul>
+        <li>定時設定を追加。</li>
+        <li>超過勤務時間を一覧画面に表示。</li>
+        <li>UI微調整</li>
+    </ul>
+    v1.0.0 (2024-12-19)
+    <ul>
+        <li>リリース</li>
+        
+    </ul>
+</section>
+
+<section>
+    <h3>Target - 対象</h3>
+    <p>個人で勤怠管理の必要がある人。</p>
+    <h3>Purpose - 目的</h3>
+    <p>出勤・退勤時間や超過勤務の理由を簡単に記録に残し、後から編集できるようにすることで、日頃の勤怠管理にかかる手間や時間を削減すること。</p>
+    <h3>Concept - コンセプト</h3>
+    <p>超過勤務の理由も残したいが毎回記入するのは大変なため、事前に項目を登録しておくことでタップで簡単に記録が残せます。</p>
+    <h3>Difference - 他アプリとの差異</h3>
+    <p>勤怠管理アプリは色々ありますが、管理側のアプリが多く個人用のものが少ない。<br>超過勤務理由を簡単に記録に残せるものがない。</p>
+    <h3>Technique - 使用技術</h3>
+    <ul>
+        <li>Flutter</li>
+        <li>SQLite</li>
+    </ul> 
+    <h3>Reasons - 技術の選定理由</h3>
+    iOSとAndroidの両方でのリリースを考えていたので、クロスプラットフォームであるFlutterを選択。実際にFlutterを採用したことで、iOS/Android両対応のアプリを短期間で開発することができました。<br>
+    勤務情報を管理する上でデータベースでCRUD機能を備えることで、データベースの習熟とスタンドアロンの小規模なスマホアプリに組み込むのに軽量なSQLiteを選択しました。
+
+    
+</section>
+
+<section>
+    <h3>Team - チーム構成</h3>
+    <ul><li>１人</li></ul>
+    <h3>Period - 開発期間</h3>
+    <ul><li>2ヶ月</li></ul>
+    <h3>Issues - 課題</h3>
+    <p>端末サイズの違いによるUIの調整に苦慮しました。固定要素ではないところを端末のスクリーンサイズを取得しレスポンシブに対応しました。<br>
+    市場規模を考えると日本だけに絞るよりも用語を翻訳するだけで世界へ配信できるなら、そのメリットが大きいと考え英語にも対応し、EUのGDPR対応も行いました。</p>
+    <h3>Outlook - 今後の展望</h3>
+    <p>バグや要望に対するアップデート、特に休憩時間の設定や日付を跨ぐ時の設定、レポートの出力など。<br>英語以外の言語にも対応することで市場拡大し、動向を探りたいと思っています。また、デザインなどの付加価値をさらに増やすことで収益化を検討しています。</p>
+</section>
+
+<section>
+    <h3>FAQ - よくある質問</h3>
+    <p><strong>Q: このアプリは無料ですか？</strong><br>A: はい、無料でご利用いただけます。</p>
+    <p><strong>Q: どうやって使うのですか？</strong><br>A: 使い方は<a href="https://migsfactory.tech/supportjp">こちら</a>からご確認ください。</p>
+</section>
+
+<section>
+    <h3>Contact us - お問い合わせ</h3>
+    <div class="attendcontact">
+        <ul>
+        <li><div class="contact" data-bs-toggle="modal" data-bs-target="#contactModal" role="button" tabindex="0">お問い合わせ</div></li>
+        <li><a href="https://migsfactory.tech/attendtap_termsjp">利用規約</a></li>
+        <li><a href="https://migsfactory.tech/attendtap_privacyjp">プライバシーポリシー</a></li>
+        <li><div>github : <a href="https://github.com/MigsFac/AttendTap">https://github.com/MigsFac/AttendTap</a></div></li>
+        </ul>
+    </div>
+</section>
+
+</div>
+</div>
+
+
+
+{% endblock %}

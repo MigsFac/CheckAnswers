@@ -6,8 +6,10 @@ header{
 }
 html{height:100%;display:flex;flex-direction:column;}
 body{display:flex;flex-direction:column;
-    height:100%;
-    background-color: rgb(255, 250, 244);}
+    height:100%;  
+    background-color: rgb(255, 250, 244);
+}
+
 footer{
     background-color:rgb(248, 249, 250);
     text-align:end;
@@ -604,10 +606,76 @@ li.numb{ cursor: pointer;}
 }
 .taglist-all{cursor:pointer;margin: 0.7rem 0;background-color:rgb(214, 226, 216);border-radius:5px;}
 .atag{display:flex;gap:0.5rem;}
-.contact{text-decoration-line:underline;cursor:pointer;}
-.contactdialog{width:80%;margin:auto;
+.contact{text-decoration-line:underline;cursor:pointer;color:#0D6EFD;}
+.contactdialog{width:70%;margin:auto;
     @media(max-width:768px){
         width:100%;
     }}
 .contactfade{pointer-events: none;}
 .demo-caption{color:grey;text-align:center;}
+
+.attendall{
+    background-color:white;
+    border:solid 3px black;
+    border-radius:10px;
+}
+.attendbody{
+    padding:0 2rem;
+    h3{margin-top:2rem;}
+}
+.attendtitle{
+    display:flex;
+    align-items:end;
+    margin:  0 0 1.5rem 0 ;
+    height: 7rem;
+    align-items:center;
+    background-color:rgb(164, 179, 248);
+}
+.attendh1{padding-left:1.5rem;}
+.featurepng{
+    display:grid;
+    width:100%;
+    justify-self:center;
+}
+.googleapple{
+    display:flex;
+    margin:2rem 0;
+    gap:2rem;
+    img{max-width:100%;}
+}
+.attendcontact{
+    display:grid;
+}
+section{
+    padding:0.5rem;
+}
+.require{
+    font-size:0.6rem;
+    background-color:red;
+    color:white;
+    border:1px solid red;
+    border-radius:5px;
+    padding:0.1rem 0.3rem;
+    margin-left:0.5rem;
+}
+.formbody{
+    display:grid;
+    margin:2rem;
+}
+.formitems{
+    gap:0.5rem;
+    justify-self:center;
+    padding-bottom:1rem;
+}
+.formsubmit{padding:0.5rem 1.5rem;width:auto;font-size:1.2rem;}
+.form-error{
+    position:absolute;
+    
+    bottom: 100%;
+    left:0;
+    z-index:10;
+}
+.custom-alert{
+    color:#333;
+    padding:10px;
+}
