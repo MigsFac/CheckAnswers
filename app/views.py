@@ -95,6 +95,11 @@ def AttendTap():
     return render_template("AttendTap.html")
 
 
+@main.route("/Portfolio")
+def Portfolio():
+    return render_template("Portfolio.html")
+
+
 @main.route("/supportjp")
 def supportjp():
     return redirect(
@@ -709,7 +714,7 @@ def score():
             if i + 1 <= len(ans):
                 if str(myans[i + 1]) != ans[i]:
                     uncollect = uncollect + 1
-                    resultscore.append(f"No.{i+1}_select:{myans[i+1]}_collect:{ans[i]}")
+                    resultscore.append(f"No.{i+1} 選択:{myans[i+1]} 正解:{ans[i]}")
                 else:
                     collect = collect + 1
         Accuracy = collect / (collect + uncollect)

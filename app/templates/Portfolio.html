@@ -1,0 +1,98 @@
+{% extends "PortfolioLayout.html" %}
+
+{% block content %}
+
+<h3 class="titleProduct">Product</h3>
+<div class="productGrid">
+<div class="product1">
+    <div class="productCategory">- Webアプリ -</div>
+    <div class="productTitle">問題集の答え合わせ用アプリ</div>
+    <div class="productCaption">事前に問題集の名前と問題数、正解一覧を登録しておいて、答えを選択していき答え合わせと結果を閲覧するアプリです。</div>
+    <div class="productTecnique">
+        <div class="productHtml">HTML/CSS</div>
+        <div class="productJavaScript">JavaScript</div>
+        <div class="productPython">Python/Flask</div>
+        <div class="productSQLite">SQLite</div>
+    </div>
+</div>
+<div class="productImg" id="area1">
+    <img src="{{ url_for('static', filename='images/checkAnswers1.png') }}" class="imageGroup active">
+    <img src="{{ url_for('static', filename='images/checkAnswers2.png') }}" class="imageGroup">
+    <img src="{{ url_for('static', filename='images/checkAnswers3.png') }}" class="imageGroup">
+    <img src="{{ url_for('static', filename='images/checkAnswers4.png') }}" class="imageGroup">
+</div>
+
+
+
+
+<div class="product2">
+    <div class="productCategory">- Webアプリ -</div>
+    <div class="productTitle">用語集登録・閲覧アプリ</div>
+    <div class="productCaption">CSVファイルを読み込んで表示する用語集アプリです。</div>
+    <div class="productTecnique">
+        <div class="productHtml">HTML/CSS</div>
+        <div class="productJavaScript">JavaScript</div>
+        <div class="productPython">Python/Flask</div>
+        <div class="productSQLite">SQLite</div>
+    </div>
+</div>
+<div class="productImg" id="area2">
+    <img src="{{ url_for('static', filename='images/productGlossary1.png') }}" class="imageGroup active">
+    <img src="{{ url_for('static', filename='images/productGlossary2.png') }}" class="imageGroup">
+
+</div>
+
+
+<div class="product3">
+    <div class="productCategory">- Webアプリ -</div>
+    <div class="productTitle">簡易計算機アプリ</div>
+    <div class="productCaption">コサイン類似度、ユークリッド距離、混同行列、特徴マップを計算する簡易計算機アプリです。</div>
+    <div class="productTecnique">
+        <div class="productHtml">HTML/CSS</div>
+        <div class="productJavaScript">JavaScript</div>
+        <div class="productPython">Python/Flask</div>
+    </div>
+</div>
+<div class="productImg" id="area3">
+    <img src="{{ url_for('static', filename='images/productCalc1.png') }}" class="imageGroup active">
+    <img src="{{ url_for('static', filename='images/productCalc2.png') }}" class="imageGroup">
+    <img src="{{ url_for('static', filename='images/productCalc3.png') }}" class="imageGroup">
+    <img src="{{ url_for('static', filename='images/productCalc4.png') }}" class="imageGroup">
+</div>
+
+
+<div class="product4">
+    <div class="productCategory">- スマホアプリ -</div>
+    <div class="productTitle">個人用勤怠管理アプリ</div>
+    <div class="productCaption">個人用の勤怠管理アプリです。</div>
+    <div class="productTecnique">
+        <div class="productFlutter">Flutter</div>
+        <div class="productSQLite">SQLite</div>
+    </div>
+</div>
+<img src="{{ url_for('static', filename='images/AttendTapIconFeature.png')}}" class="productImg">
+
+
+</div>
+
+
+<script>
+    function setupSlideshow(containerId,delay){
+        const container = document.getElementById(containerId);
+        const images = container.querySelectorAll(".imageGroup");
+        let currentIndex = 0;
+
+        setInterval(() => {
+            images[currentIndex].classList.remove("active");
+
+            currentIndex = (currentIndex + 1) % images.length;
+
+            images[currentIndex].classList.add("active");
+        }, delay);
+    }
+    setupSlideshow('area1',2000);
+    setupSlideshow('area2',2000);
+    setupSlideshow('area3',2000);
+</script>
+
+{% endblock %}

@@ -53,7 +53,7 @@
     </div>
  </div>
 
-    <a href="{{ url_for('main.TestQA')}}">テストTOPへ戻る</a>
+    <a href="{{ url_for('main.TestQA')}}" id="returnTopConfirm">メインメニューへ</a>
 
     <script>//Pre,Postボタンで前、次の問題番号へ
         document.addEventListener('DOMContentLoaded',()=>{
@@ -89,6 +89,18 @@
                 });
                 });
             });    
+        });
+    </script>
+
+    <script>//topもどる確認ダイアログ
+        document.addEventListener('DOMContentLoaded',()=>{
+            const TopReturn = document.getElementById('returnTopConfirm');
+            TopReturn.addEventListener('click',function(){
+                let yesno = confirm("今までの回答も破棄されます。メインメニューへ戻ってよろしいですか？");
+                if (yesno){
+                    window.location.href = "/TestQA"
+                } else {event.preventDefault();}
+            });
         });
     </script>
 

@@ -604,6 +604,7 @@ li.numb{ cursor: pointer;}
         min-width:0;flex-wrap:wrap;}
     .addnumber{gap:0.5em;text-decoration:underline;cursor:pointer;}
 }
+.activeTag{border:solid 1px red;}
 .taglist-all{cursor:pointer;margin: 0.7rem 0;background-color:rgb(214, 226, 216);border-radius:5px;}
 .atag{display:flex;gap:0.5rem;}
 .contact{text-decoration-line:underline;cursor:pointer;color:#0D6EFD;}
@@ -679,3 +680,23 @@ section{
     color:#333;
     padding:10px;
 }
+.contact{width:auto;display:inline-block;}
+
+.titleProduct{border-bottom:solid 1px black;}
+
+.productGrid{display:grid;grid-template-columns:1fr 1fr;}
+.product1 ,.product2,.product3,.product4{align-self:center;}
+.productCategory{font-size:smaller;grid-column:1/2;}
+.productTitle{font-weight:bold;grid-column:1/2;}
+.productCaption{font-size:0.8rem;grid-column:1/2}
+.productTecnique{font-size:0.65rem;gap:0.1rem;display:flex;grid-column:1/2;}
+
+.productHtml{width:auto;background-color:rgba(180,180,250,0.7);border:1px solid grey;border-radius:8px;padding:0 3px;}
+.productJavaScript{width:auto;background-color:rgba(250,150,150,0.7);border:1px solid grey;border-radius:8px;padding:0 3px;}
+.productPython{width:auto;background-color:rgba(250,250,150,0.7);border:1px solid grey;border-radius:8px;padding:0 3px;}
+.productSQLite{width:auto;background-color:rgba(180,250,180,0.7);border:1px solid grey;border-radius:8px;padding:0 3px;}
+.productFlutter{width:auto;background-color:rgba(100,200,250,0.5);border:1px solid grey;border-radius:8px;padding:0 3px;}
+
+.productImg{position:relative;width:350px;height:240px;grid-column:2/3;margin:1rem;overflow:hidden}
+.imageGroup{position: absolute;width:100%;height:100%;opacity:0;transition:opacity 1s ease-in-out;}
+.imageGroup.active {opacity:1;}

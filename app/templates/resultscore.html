@@ -2,7 +2,7 @@
 
 {% block content %}
 
-    <h1>テスト用のテスト入力</h1>
+    <h1>Check Answers</h1>
     
     <h2>{{session['selectBT']}}</h2>
     <h2>  正解率：{{session['result_data'].collect}}／{{session['result_data'].uncollect+session['result_data'].collect}}　＝　{{session['result_data'].Accuracy}}％</h2>
@@ -14,7 +14,7 @@
         {% endfor %}
     </div>
     
-    <a href="{{ url_for('main.TestQA')}}">テストトップへ戻る</a>
+    <a href="{{ url_for('main.TestQA')}}">メインメニューへ</a>
 
     <script>
         document.addEventListener('DOMContentLoaded',()=>{

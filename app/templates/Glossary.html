@@ -12,10 +12,10 @@
     </div>
 
     <div class="tags">
-            <input type="radio" id="tag0" class="tag-radio" name="tagR" value="0" onclick="smallTag('All')" style="display:none;">
+            <input type="radio" id="tag0" class="tag-radio" name="tagR" value="0" onclick="smallTag('All')" data-value="All" style="display:none;">
             <label for="tag0" class="taglist" >All</label>
         {% for tag in Ltaglist %}
-            <input type="radio" id="tag{{ loop.index }}" class="tag-radio" name="tagR" value="{{ loop.index }}" onclick="smallTag('{{ tag }}')" style="display:none;">
+            <input type="radio" id="tag{{ loop.index }}" class="tag-radio" name="tagR" value="{{ loop.index }}" onclick="smallTag('{{ tag }}')" data-value="{{tag}}" style="display:none;">
             <label for="tag{{ loop.index }}" class="taglist" >{{ tag }}</label>
         {% endfor %}
     </div>
@@ -45,15 +45,22 @@
         let grelateName = null;
         const gArea = document.getElementById('glossaryid');
         let kana = null;
-
+        let previousLtag = null;
         const PerPage = 30;//1ページに表示するアイテム数
         let currentPage = 1;//現在のページ番号　初期値
         let pages = 0;
 
-        function selectTag(tag){console.log('selectTag is run');//Ltagの中のさらにtagを選んだ時の表示
-          const atagevent = document.getElementById('atag');
-
+        function selectTag(tag){  //Ltagの中のさらにtagを選んだ時の表示
+            const atagevent = document.getElementById('atag');
+            let previousAtag = null;
             atagevent.addEventListener('click', (event) => {
+                   console.log("eventtarget:",event.target);
+                   const currentAtag = event.target;
+                   if (previousAtag && previousAtag !== currentAtag){
+                    previousAtag.classList.remove("activeTag");
+                   }
+                   currentAtag.classList.add("activeTag");
+                   previousAtag = currentAtag;
                    const taga = new RegExp(tag.slice(1,-1));
                    kana = Object.keys(terms)
                    .filter(key => taga.test(terms[key].reading))
@@ -91,6 +98,26 @@
             aArea.innerHTML = '';
             let isRunning = true;
             currentPage = 1;
+            
+            let currentLtag = null;
+            const tagFind = document.getElementsByName('tagR');
+            console.log("tagFind:",tagFind)
+            for(let i =0;i<tagFind.length;i++){
+                console.log("tagFind[i]data-value:",tagFind[i].getAttribute("data-value")," ,tag:",tag);
+
+                if(tag==tagFind[i].getAttribute("data-value")){
+                    currentLtag = tagFind[i];
+                    currentLtag = document.querySelector(`label[for="${currentLtag.id}"]`);
+                    console.log("currentLtag:",currentLtag);
+                }
+            }
+            console.log("currentLtag:",currentLtag," previousLtag:",previousLtag);
+            if (previousLtag && previousLtag !== currentLtag){
+                previousLtag.classList.remove("activeTag")
+            }
+            currentLtag.classList.add("activeTag");
+            previousLtag = currentLtag;
+
             if (tag == 'All'){
                 grelateName = Object.keys(Ltagtag)
                 relateName = Object.keys(terms)
@@ -114,18 +141,22 @@
                 }
             } 
             const Ltagevent = Array.from(document.getElementsByName('Ltagn'));
+            let previousTarget = null;
             Ltagevent.forEach((Leve) => {
                 Leve.addEventListener('click',(event) => {
                     isRunning = false;
-                    console.log('isRunning:' ,isRunning);
                     gArea.innerHTML ='';
                     const labeldata = event.target.getAttribute('data-value');
-                    console.log('event.target.value:',labeldata);
+                    const currentTarget = event.target;
+                    if (previousTarget && previousTarget !== currentTarget){
+                        previousTarget.classList.remove("activeTag")
+                    }
+                    currentTarget.classList.add("activeTag");
+                    previousTarget = currentTarget;
                     selectTag(labeldata);
                 });
             });
             if (isRunning){//Ltag選ばれてればそのまま表示。中のタグ選んだ時点でfalseにして表示を止める。
-                console.log('if isRunning:',isRunning);
 
                 renderPage(currentPage,relateName);
             } 
@@ -172,7 +203,6 @@
             
             itemShow.forEach(nameKey => {
                 pages = Math.ceil(items.length / PerPage)
-                console.log('items.length:',items.length,'perpage:',PerPage,'pages:',pages);
                 const termsInfo = terms[nameKey];
                 
                 gArea.innerHTML += `<div class="gname">${termsInfo.name}</div><div class="gdes">${termsInfo.description}</div>`;

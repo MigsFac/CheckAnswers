@@ -2,14 +2,14 @@
 
 {% block content %}
 
-    <h1>テスト用のテスト入力</h1>
+    <h1>Check Answers</h1>
     
    <form method ="POST" action="{{url_for('main.register') }}" id="inform">
       <div class="BookList">
             <div class="Books">
-                <div class="dbt">Title</div>
+                <div class="dbt">タイトル</div>
                 <div class="dbq">問題数</div>
-                <div class="dbl">答えList</div>
+                <div class="dbl">答えリスト</div>
             </div>
 
             <div class="existTitle">
@@ -28,8 +28,8 @@
            </div>
       </div>
       <div class="reg">
-         <input type="submit" name="action" class="btn btn-primary" value="regist" id="reg">
-         <input type="submit" name="action" class="btn btn-light delbutton" value="del" id="delsub"><br>
+         <button type="submit" name="action" class="btn btn-primary" value="regist" id="reg">登録</button>
+         <button type="submit" name="action" class="btn btn-light delbutton" value="del" id="delsub">削除</button><br>
       </div>
 
       <div style="display:flex;justify-self:flex-end;margin:0.5rem 0;">  
@@ -39,7 +39,7 @@
       </div>
     </form>
     
-    <a href="{{ url_for('main.TestQA')}}">テストTopへ戻る</a>
+    <a href="{{ url_for('main.TestQA')}}">メインメニューへ</a>
 
     {# ユーザ登録モーダル #}
     <div class="modal fade" id="registModal" tabindex="-1" aria-labelledby="registModalLabel" aria-hidden="true">

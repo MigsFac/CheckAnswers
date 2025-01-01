@@ -2,7 +2,7 @@
 
 {% block content %}
 
-    <h1>テスト用のテスト入力</h1>
+    <h1>Check Answers</h1>
     
     <h2>結果の履歴</h2>
    
@@ -11,7 +11,7 @@
         <div class="TTitle">タイトル</div>
         <div class="Taccu">正解率</div>
         <div class="TRD">間違った番号</div>
-        <div class="Tfavo">favo</div>
+        <div class="Tfavo">要確認</div>
 
         {% for i in session['Rdb'] %}
             <input type="checkbox" id="{{ loop.index0 }}" class="box" name="dc" value="{{ i.date }}">
@@ -37,7 +37,7 @@
 
     </div>
 
-    <a href="{{ url_for('main.TestQA')}}">テストトップへ戻る</a>
+    <a href="{{ url_for('main.TestQA')}}">メインメニューへ</a>
 
     <script>//削除用のボタンとチェックボックス
         const delbutton = document.getElementById('delbutton');
