@@ -7,6 +7,7 @@
 </div>
 
 <div class="productGrid">
+<div class="productLine"></div>
 <div class="product1">
     <div class="productCategory">- Webアプリ -</div>
     <div class="productTitle">問題集の答え合わせ用アプリ</div>
@@ -24,6 +25,7 @@
     <img src="{{ url_for('static', filename='images/checkAnswers2.png') }}" class="imageGroup">
     <img src="{{ url_for('static', filename='images/checkAnswers3.png') }}" class="imageGroup">
     <img src="{{ url_for('static', filename='images/checkAnswers4.png') }}" class="imageGroup">
+    <span class="tooltip">実際のデモはこちらからご覧いただけます。</span>
 </a>
 
 <div class="productLine"></div>
@@ -46,6 +48,7 @@
     <img src="{{ url_for('static', filename='images/productGlossary2.png') }}" class="imageGroup">
     <img src="{{ url_for('static', filename='images/productGlossary3.png') }}" class="imageGroup">
     <img src="{{ url_for('static', filename='images/productGlossary4.png') }}" class="imageGroup">
+    <span class="tooltip">実際のデモはこちらからご覧いただけます。</span>
 </a>
 <div class="productLine"></div>
 
@@ -65,6 +68,7 @@
     <img src="{{ url_for('static', filename='images/productCalc2.png') }}" class="imageGroup">
     <img src="{{ url_for('static', filename='images/productCalc3.png') }}" class="imageGroup">
     <img src="{{ url_for('static', filename='images/productCalc4.png') }}" class="imageGroup">
+    <span class="tooltip">実際のデモはこちらからご覧いただけます。</span>
 </a>
 <div class="productLine"></div>
 
@@ -78,25 +82,27 @@
     </div>
     <div class="productDetail">詳細は<a class="this" href="{{ url_for('main.AttendTap_portfolio')}}">こちら</a></div>
 </div>
-<a href="{{ url_for('main.AttendTap_portfolio')}}">
-<img src="{{ url_for('static', filename='images/AttendTapIconFeature.png')}}" class="productImg atImg">
+<a href="{{ url_for('main.AttendTap_portfolio')}}" class="productImg atImgA">
+    <img src="{{ url_for('static', filename='images/AttendTapIconFeature.png')}}" class="atImg">
 </a>
 <div class="productLine"></div>
 
 <div class="product5">
     <div class="productCategory">- Webアプリ -</div>
     <div class="productTitle">投与量簡易計算機アプリ</div>
-    <div class="productCaption">放射性医薬品の投与量計算アプリです。薬を選んで、体重を入力すると投与量が計算されます。</div>
+    <div class="productCaption">放射性医薬品の投与量計算アプリです。薬を選んで、体重を入力すると投与量が計算されます。<br><span style="font-size:smaller">（アプリの表示に時間がかかることがあります。）</span></div>
     <div class="productTecnique">
         <div class="productHtml">Html/CSS</div>
         <div class="productJava">Java/Spring Boot</div>      
     </div>
     <div class="productDetail">詳細は<span class="this">こちら</span></div>
+    
 </div>
 <a class="productImg" id="area4" href="{{ url_for('main.injectionJava_portfolio')}}">
     <img src="{{ url_for('static', filename='images/productJava1.png') }}" class="imageGroup active">
     <img src="{{ url_for('static', filename='images/productJava2.png') }}" class="imageGroup">
     <img src="{{ url_for('static', filename='images/productJava3.png') }}" class="imageGroup">
+    <span class="tooltip">実際のデモはこちらからご覧いただけます。</span>
 </a>
 <div class="productLine"></div>
 

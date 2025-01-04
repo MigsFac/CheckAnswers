@@ -2,7 +2,7 @@
 {% block content %}
 
     <div class="demo-caption">※デモ版としてご自由に触っていただいて大丈夫です。個人情報の入力はしないようにお願いします。</div>
-    <div class="login" id="login" data-bs-toggle="modal" data-bs-target="#loginModal">{% if session["user_id"] %}{{ session["user_id"]["username"] }}でログイン中{% else %}ログイン{% endif %}</div>
+    <div class="logindiv"><div class="login" id="login" data-bs-toggle="modal" data-bs-target="#loginModal">{% if session["user_id"] %}{{ session["user_id"]["username"] }}でログイン中{% else %}ログイン{% endif %}</div></div>
     <h1>Check Answers</h1>
     <div class="timerconfig">
        <input type="checkbox" class="timerflag" id="tflag" value="True">
@@ -24,7 +24,7 @@
       </select>
     </div>
 
-    <form action="/Question" method="POST">
+    <form action="/Question?key={{key}}" method="POST">
     <div class="menu">
         <div class="Title mx-auto">
             <select class="Tselect" name="QTitle" id="QTitle">

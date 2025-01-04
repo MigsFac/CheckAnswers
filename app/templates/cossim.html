@@ -17,7 +17,7 @@
             <div class="caption2" style="font-size:200%">コサイン類似度</div>
         
             <div class="caption3">\( \dfrac{a_1b_1+a_2b_2}{\sqrt{a_1^2+a_2^2}*\sqrt{b_1^2+b_2^2}} \)</div>
-            <div class="capcossim">{% if session['result'].cossim %}= {{session['result'].cossim}}{% else %}{% endif %}</div>
+            <div class="capcossim">{% if session['result'].cossim is defined%}= {{session['result'].cossim}}{% else %}{% endif %}</div>
          </div>
 
 
@@ -41,7 +41,7 @@
            <div class="para">
                b<sub>3</sub> <input type="number" step="0.01" name="b3"class="parain" {% if session['result']!=none %}value="{{session['result']['cossiminit'][5]}}"{% endif %}>
            </div>
-           <div class="caption4">空欄は0で補完されますが、aとbに最低一つずつ値入れないとエラー落ちします。</b></div>
+           <div class="caption4">空欄は0で補完されますが、aとbに最低一つずつ値入れないとエラーになります。</b></div>
            <div  class="submitbutton" >
              <button type="submit" name="submit" value="cossim" class="btn btn-primary">実行</button>
            </div>

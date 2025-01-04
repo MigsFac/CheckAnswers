@@ -65,6 +65,12 @@ def Calculator():
     return render_template("Calculator.html", current_page="Calculator")
 
 
+@main.route("/clear_session", methods=["POST"])
+def clear_session():
+    session.clear()
+    return jsonify({"status": "success"}), 200
+
+
 @main.route("/Gchrono")
 def Gchrono():
     return render_template("Gchrono.html", current_page="Gchrono")
@@ -696,6 +702,15 @@ def Que2nd():
     session["favo"] = favo
 
     print("/que2nd post key:", key)
+    if key == "pf":
+        print("/que2nd pf key:", key)
+        return render_template("Question_portfolio.html", key=key)
+    else:
+        return render_template("Question.html")
+
+
+@main.route("/Qdisplay", methods=["GET"])
+def Qdisplay():
     if key == "pf":
         return render_template("Question_portfolio.html", key=key)
     else:

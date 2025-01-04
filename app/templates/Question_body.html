@@ -65,7 +65,7 @@
                 button.addEventListener('click', function(){
                 console.log('PrePost click:');
                 const prepos = this.value;
-                const key = new URLSearchParams(window.location.search).get('key')
+                const key = "{{key}}";
                 fetch('/Que2nd',{
                     method: 'POST',
                     headers:{
@@ -76,15 +76,19 @@
                 })
                 .then(response =>{
                    if(response.ok){
-                      
+                      console.log(key);
                       window.location.reload();
                       console.log('session_question:',{{session['questions']}});
+                      
                     } else {
                         console.error('POST request failed:',response.statusText);
                     }
                 })
                 .then(data => {
-                    document.getElementById('test').textContent = session['questions']
+                    key = "{{key}}";
+                    
+                    document.getElementById('test').textContent = session['questions'];
+                    
                 })
                 
                 .catch(error => {
