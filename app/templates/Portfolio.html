@@ -2,27 +2,31 @@
 
 {% block content %}
 
-<h3 class="titleProduct">Product</h3>
+<div id="product-section" style="scroll-margin-top:90px;">
+    <h1 class="titleProduct">Product</h1>
+</div>
+
 <div class="productGrid">
 <div class="product1">
     <div class="productCategory">- Webアプリ -</div>
     <div class="productTitle">問題集の答え合わせ用アプリ</div>
-    <div class="productCaption">事前に問題集の名前と問題数、正解一覧を登録しておいて、答えを選択していき答え合わせと結果を閲覧するアプリです。</div>
+    <div class="productCaption">事前に問題集の名前と問題数、正解一覧を登録しておき、答えを選択して答え合わせと結果を閲覧するアプリです。</div>
     <div class="productTecnique">
         <div class="productHtml">HTML/CSS</div>
         <div class="productJavaScript">JavaScript</div>
         <div class="productPython">Python/Flask</div>
         <div class="productSQLite">SQLite</div>
     </div>
+    <div class="productDetail">詳細は<a class="this" href="{{ url_for('main.checkAnswers_portfolio')}}">こちら</a></div>
 </div>
-<div class="productImg" id="area1">
+<a class="productImg" id="area1" href="{{ url_for('main.TestQA',key='pf')}}">
     <img src="{{ url_for('static', filename='images/checkAnswers1.png') }}" class="imageGroup active">
     <img src="{{ url_for('static', filename='images/checkAnswers2.png') }}" class="imageGroup">
     <img src="{{ url_for('static', filename='images/checkAnswers3.png') }}" class="imageGroup">
     <img src="{{ url_for('static', filename='images/checkAnswers4.png') }}" class="imageGroup">
-</div>
+</a>
 
-
+<div class="productLine"></div>
 
 
 <div class="product2">
@@ -35,13 +39,15 @@
         <div class="productPython">Python/Flask</div>
         <div class="productSQLite">SQLite</div>
     </div>
+    <div class="productDetail">詳細は<span class="this">こちら</span></div>
 </div>
-<div class="productImg" id="area2">
+<a class="productImg" id="area2" href="{{ url_for('main.GlossaryPage',key='pf')}}">
     <img src="{{ url_for('static', filename='images/productGlossary1.png') }}" class="imageGroup active">
     <img src="{{ url_for('static', filename='images/productGlossary2.png') }}" class="imageGroup">
-
-</div>
-
+    <img src="{{ url_for('static', filename='images/productGlossary3.png') }}" class="imageGroup">
+    <img src="{{ url_for('static', filename='images/productGlossary4.png') }}" class="imageGroup">
+</a>
+<div class="productLine"></div>
 
 <div class="product3">
     <div class="productCategory">- Webアプリ -</div>
@@ -52,29 +58,53 @@
         <div class="productJavaScript">JavaScript</div>
         <div class="productPython">Python/Flask</div>
     </div>
+    <div class="productDetail">詳細は<span class="this">こちら</span></div>
 </div>
-<div class="productImg" id="area3">
+<a class="productImg" id="area3" href="{{ url_for('main.Calculator_portfolio')}}">
     <img src="{{ url_for('static', filename='images/productCalc1.png') }}" class="imageGroup active">
     <img src="{{ url_for('static', filename='images/productCalc2.png') }}" class="imageGroup">
     <img src="{{ url_for('static', filename='images/productCalc3.png') }}" class="imageGroup">
     <img src="{{ url_for('static', filename='images/productCalc4.png') }}" class="imageGroup">
-</div>
-
+</a>
+<div class="productLine"></div>
 
 <div class="product4">
     <div class="productCategory">- スマホアプリ -</div>
     <div class="productTitle">個人用勤怠管理アプリ</div>
-    <div class="productCaption">個人用の勤怠管理アプリです。</div>
+    <div class="productCaption">個人用の勤怠管理アプリです。iOS配信中、Android申請中</div>
     <div class="productTecnique">
         <div class="productFlutter">Flutter</div>
         <div class="productSQLite">SQLite</div>
     </div>
+    <div class="productDetail">詳細は<a class="this" href="{{ url_for('main.AttendTap_portfolio')}}">こちら</a></div>
 </div>
-<img src="{{ url_for('static', filename='images/AttendTapIconFeature.png')}}" class="productImg">
+<a href="{{ url_for('main.AttendTap_portfolio')}}">
+<img src="{{ url_for('static', filename='images/AttendTapIconFeature.png')}}" class="productImg atImg">
+</a>
+<div class="productLine"></div>
 
+<div class="product5">
+    <div class="productCategory">- Webアプリ -</div>
+    <div class="productTitle">投与量簡易計算機アプリ</div>
+    <div class="productCaption">放射性医薬品の投与量計算アプリです。薬を選んで、体重を入力すると投与量が計算されます。</div>
+    <div class="productTecnique">
+        <div class="productHtml">Html/CSS</div>
+        <div class="productJava">Java/Spring Boot</div>      
+    </div>
+    <div class="productDetail">詳細は<span class="this">こちら</span></div>
+</div>
+<a class="productImg" id="area4" href="{{ url_for('main.injectionJava_portfolio')}}">
+    <img src="{{ url_for('static', filename='images/productJava1.png') }}" class="imageGroup active">
+    <img src="{{ url_for('static', filename='images/productJava2.png') }}" class="imageGroup">
+    <img src="{{ url_for('static', filename='images/productJava3.png') }}" class="imageGroup">
+</a>
+<div class="productLine"></div>
 
 </div>
 
+<h1 class="titleProduct" id="about-section">About</h1>
+
+<h1 class="titleProduct" id="contact-section">Contact</h1>
 
 <script>
     function setupSlideshow(containerId,delay){
@@ -93,6 +123,7 @@
     setupSlideshow('area1',2000);
     setupSlideshow('area2',2000);
     setupSlideshow('area3',2000);
+    setupSlideshow('area4',2000);
 </script>
 
 {% endblock %}

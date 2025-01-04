@@ -100,6 +100,26 @@ def Portfolio():
     return render_template("Portfolio.html")
 
 
+@main.route("/AttendTap_portfolio")
+def AttendTap_portfolio():
+    return render_template("AttendTap_portfolio.html")
+
+
+@main.route("/checkAnswers_portfolio")
+def checkAnswers_portfolio():
+    return render_template("checkAnswers_portfolio.html")
+
+
+@main.route("/Calculator_portfolio")
+def Calculator_portfolio():
+    return render_template("Calculator_portfolio.html")
+
+
+@main.route("/injectionJava_portfolio")
+def injectionJava_portfolio():
+    return render_template("injectionJava_portfolio.html")
+
+
 @main.route("/supportjp")
 def supportjp():
     return redirect(
@@ -187,9 +207,18 @@ def TestQA():
     if "BookTitle" not in session:
         session["BookTitle"] = BookTitlelist
 
-    return render_template(
-        "TestQA.html", current_page="TestQA", BookTitlelist=BookTitlelist
-    )
+    key = request.args.get("key")
+    if key == "pf":
+        return render_template(
+            "TestQA_portfolio.html",
+            current_page="TestQA",
+            BookTitlelist=BookTitlelist,
+            key=key,
+        )
+    else:
+        return render_template(
+            "TestQA.html", current_page="TestQA", BookTitlelist=BookTitlelist
+        )
 
 
 @main.route("/db")
@@ -214,7 +243,13 @@ def db():
         session["BookTitle"] = BookTitlelist
 
     BookT = session.get("BookTitle", [])
-    return render_template("db.html", BookT=BookT)
+
+    key = request.args.get("key")
+
+    if key == "pf":
+        return render_template("db_portfolio.html", BookT=BookT, key=key)
+    else:
+        return render_template("db.html", BookT=BookT)
 
 
 @main.route("/register", methods=["POST"])
@@ -226,6 +261,8 @@ def register():
     collectans = request.form["collectans"]
     check = request.form.getlist("check")
     action = request.form.get("action")
+
+    key = request.form.get("key")
 
     if action == "del":
         if check:
@@ -250,7 +287,10 @@ def register():
                     {"Title": row.title, "qnum": row.qnum, "collectans": row.collectans}
                 )
             session["BookTitle"] = Bdb
-        return redirect(url_for("main.db"))
+        if key == "pf":
+            return redirect(url_for("main.db", key=key))
+        else:
+            return redirect(url_for("main.db"))
     elif action == "regist":
         if "user_id" in session:
             user_id = session["user_id"]["user_id"]
@@ -279,8 +319,15 @@ def register():
             )
 
         session["BookTitle"] = Bdb
+
+        if key == "pf":
+            return redirect(url_for("main.db", key=key))
+        else:
+            return redirect(url_for("main.db"))
+    if key == "pf":
+        return redirect(url_for("main.db", key=key))
+    else:
         return redirect(url_for("main.db"))
-    return redirect(url_for("main.db"))
 
 
 @main.route("/cossim")
@@ -540,84 +587,103 @@ def result():
 
 @main.route("/Question", methods=["GET", "POST"])
 def Question():
-    from app import db
+    if request.method == "GET":
+        key = request.args.get("key")
+        print("/question get key:", key)
 
-    selectBT = request.form.get("QTitle")
-    session["selectBT"] = selectBT
-    BookTitlelist = session.get("BookTitle", [])
-    qnum = 0
-    for book in BookTitlelist:
-        if selectBT == book["Title"]:
-            qnum = book["qnum"]
-    Rdb = []
-    if "user_id" in session:
-        user_id = session["user_id"]["user_id"]
-        R_db = db.session.query(ResultList).filter_by(user_id=user_id).all()
-        bookid = db.session.query(BookTitle).filter_by(user_id=user_id).all()
-        bookid = bookid or []
-        book_id = None
-        for bi in bookid:
-            if selectBT == bi.title:
-                book_id = bi.book_id
-        if book_id is not None:
-            session["book_id"] = book_id
-        for row in R_db:
-            Rdb.append(
-                {
-                    "date": row.date,
-                    "title": row.title,
-                    "collect": row.collect,
-                    "uncollect": row.uncollect,
-                    "accuracy": row.accuracy,
-                    "RD": row.rd,
-                    "favo": row.favo,
-                }
-            )
-    else:
-        R_db = db.session.query(DEMOResultList).all()
-        bookid = db.session.query(DEMOBookTitle).all()
-        book_id = None
-        bookid = bookid or []
-        for bi in bookid:
-            if selectBT == bi.title:
-                book_id = bi.book_id
-        if book_id is not None:
-            session["book_id"] = book_id
-        for row in R_db:
-            Rdb.append(
-                {
-                    "date": row.date,
-                    "title": row.title,
-                    "collect": row.collect,
-                    "uncollect": row.uncollect,
-                    "accuracy": row.accuracy,
-                    "RD": row.rd,
-                    "favo": row.favo,
-                }
-            )
-    session["Rdb"] = Rdb
+        if key == "pf":
+            return render_template("Question_portfolio.html", key=key)
+        else:
+            return render_template("Question.html")
 
-    qnum = int(qnum)
-    session["qnum"] = qnum
-    if "myans" not in session:
-        session["myans"] = [None] * (qnum + 1)
+    elif request.method == "POST":
+        from app import db
 
-    if "favo" not in session:
-        session["favo"] = [None] * (qnum + 1)
+        selectBT = request.form.get("QTitle")
+        session["selectBT"] = selectBT
+        BookTitlelist = session.get("BookTitle", [])
+        qnum = 0
+        for book in BookTitlelist:
+            if selectBT == book["Title"]:
+                qnum = book["qnum"]
+        Rdb = []
+        if "user_id" in session:
+            user_id = session["user_id"]["user_id"]
+            R_db = db.session.query(ResultList).filter_by(user_id=user_id).all()
+            bookid = db.session.query(BookTitle).filter_by(user_id=user_id).all()
+            bookid = bookid or []
+            book_id = None
+            for bi in bookid:
+                if selectBT == bi.title:
+                    book_id = bi.book_id
+            if book_id is not None:
+                session["book_id"] = book_id
+            for row in R_db:
+                Rdb.append(
+                    {
+                        "date": row.date,
+                        "title": row.title,
+                        "collect": row.collect,
+                        "uncollect": row.uncollect,
+                        "accuracy": row.accuracy,
+                        "RD": row.rd,
+                        "favo": row.favo,
+                    }
+                )
+        else:
+            R_db = db.session.query(DEMOResultList).all()
+            bookid = db.session.query(DEMOBookTitle).all()
+            book_id = None
+            bookid = bookid or []
+            for bi in bookid:
+                if selectBT == bi.title:
+                    book_id = bi.book_id
+            if book_id is not None:
+                session["book_id"] = book_id
+            for row in R_db:
+                Rdb.append(
+                    {
+                        "date": row.date,
+                        "title": row.title,
+                        "collect": row.collect,
+                        "uncollect": row.uncollect,
+                        "accuracy": row.accuracy,
+                        "RD": row.rd,
+                        "favo": row.favo,
+                    }
+                )
+        session["Rdb"] = Rdb
 
-    if request.form.get("action") == "start":
-        return render_template("Question.html")
-    elif request.form.get("action") == "config":
-        return redirect(url_for("main.db"))
-    elif request.form.get("action") == "result":
-        return render_template("resultlist.html")
+        qnum = int(qnum)
+        session["qnum"] = qnum
+        if "myans" not in session:
+            session["myans"] = [None] * (qnum + 1)
+
+        if "favo" not in session:
+            session["favo"] = [None] * (qnum + 1)
+
+        key = request.form.get("key")
+        print("/question post key:", key)
+        if request.form.get("action") == "start":
+            if key == "pf":
+                return render_template("Question_portfolio.html", key=key)
+            else:
+                return render_template("Question.html")
+        elif request.form.get("action") == "config":
+            return redirect(url_for("main.db", key=key))
+        elif request.form.get("action") == "result":
+            if key == "pf":
+                return render_template("resultlist_portfolio.html", key=key)
+            else:
+                return render_template("resultlist.html")
 
 
-@main.route("/Que2nd", methods=["GET", "POST"])
+@main.route("/Que2nd", methods=["POST"])
 def Que2nd():
     questions = session["questions"]
     myans = session["myans"]
     favo = session["favo"]
+    key = request.json.get("key")
 
     if request.json.get("prepos") == "preQ":
         questions = questions - 1
@@ -629,7 +695,11 @@ def Que2nd():
     session["myans"] = myans
     session["favo"] = favo
 
-    return render_template("Question.html")
+    print("/que2nd post key:", key)
+    if key == "pf":
+        return render_template("Question_portfolio.html", key=key)
+    else:
+        return render_template("Question.html")
 
 
 @main.route("/saveradio", methods=["POST"])
@@ -726,7 +796,8 @@ def score():
             "uncollect": uncollect,
             "resultscore": resultscore,
         }
-        redirect_url = "/resultscore"
+        key = request.get_json().get("key")
+        redirect_url = f"/resultscore?key={key}"
         session["result_data"] = result_data
 
         return jsonify({"redirect": redirect_url})
@@ -734,7 +805,11 @@ def score():
 
 @main.route("/resultscore", methods=["GET", "POST"])
 def resultscore():
-    return render_template("resultscore.html")
+    key = request.args.get("key")
+    if key == "pf":
+        return render_template("resultscore_portfolio.html", key=key)
+    else:
+        return render_template("resultscore.html")
 
 
 @main.route("/savelist", methods=["POST"])
@@ -797,7 +872,13 @@ def savelist():
         db.session.add(new_result)
         db.session.commit()
 
-    return jsonify({"redirect_url": "/TestQA"})
+    key = request.json.get("key")
+
+    if key == "pf":
+        redirect_url = "/TestQA?key=pf"
+        return jsonify({"redirect_url": redirect_url})
+    else:
+        return jsonify({"redirect_url": "/TestQA"})
 
 
 @main.route("/delcheck", methods=["POST"])
@@ -840,12 +921,34 @@ def delcheck():
             )
 
         session["Rdb"] = Rdb
-        return jsonify({"message": "削除完了", "redirect_url": "/resultlist"})
+
+        if request.is_json:
+            key = request.json.get("key")
+        else:
+            key = False
+
+        if key == "pf":
+            redirect_url = f"/resultlist?key={key}"
+
+            return jsonify(
+                {
+                    "message": "削除完了",
+                    "redirect_url": redirect_url,
+                }
+            )
+
+        else:
+            return jsonify({"message": "削除完了", "redirect_url": "/resultlist"})
 
 
 @main.route("/resultlist", methods=["GET", "POST"])
 def resultlist():
-    return render_template("resultlist.html")
+    key = request.args.get("key")
+
+    if key == "pf":
+        return render_template("resultlist_portfolio.html", key=key)
+    else:
+        return render_template("resultlist.html")
 
 
 @main.route("/GlossaryPage", methods=["GET", "POST"])
@@ -908,15 +1011,26 @@ def GlossaryPage():
             Ltagtag[Ltagname] = {"Ltag": Ltagname, "tag": []}
         if tagname:
             Ltagtag[Ltagname]["tag"].append(tagname)
+    key = request.args.get("key")
 
-    return render_template(
-        "Glossary.html",
-        terms=terms,
-        taglist=taglist,
-        Ltaglist=Ltaglist,
-        Ltagtag=Ltagtag,
-        current_page="Glossary",
-    )
+    if key == "pf":
+        return render_template(
+            "Glossary_portfolio.html",
+            terms=terms,
+            taglist=taglist,
+            Ltaglist=Ltaglist,
+            Ltagtag=Ltagtag,
+            current_page="Glossary",
+        )
+    else:
+        return render_template(
+            "Glossary.html",
+            terms=terms,
+            taglist=taglist,
+            Ltaglist=Ltaglist,
+            Ltagtag=Ltagtag,
+            current_page="Glossary",
+        )
 
 
 @main.route("/filein", methods=["GET", "POST"])
@@ -1008,7 +1122,8 @@ def userregist():
     username = data.get("username")
     password = data.get("password")
     rolecheck = data.get("rolecheck")
-
+    key = request.json.get("key")
+    print(key)
     if rolecheck == True:
         role = "admin"
     else:
@@ -1027,10 +1142,23 @@ def userregist():
             {"user_id": row[0], "username": row[1], "role": row[2]} for row in userlist
         ]
         session["userlist"] = userlist
-        return (
-            jsonify({"message": "User registered successfully", "redirect_url": "/db"}),
-            200,
-        )
+        if key == "pf":
+            return (
+                jsonify(
+                    {
+                        "message": "User registered successfully",
+                        "redirect_url": "/db?key=pf",
+                    }
+                ),
+                200,
+            )
+        else:
+            return (
+                jsonify(
+                    {"message": "User registered successfully", "redirect_url": "/db"}
+                ),
+                200,
+            )
     except sqlite3.Error as e:
         return jsonify({"error": f"Database error: {str(e)}"}), 500
 
@@ -1041,7 +1169,8 @@ def deluser():
 
     data = request.get_json()
     checkitems = data.get("checkitems", [])
-
+    key = request.json.get("key")
+    print(key)
     if not data:
         return jsonify({"error": "Invalid data"}), 400
     else:
@@ -1056,14 +1185,22 @@ def deluser():
                 for row in userlist
             ]
             session["userlist"] = userlist
+    if key == "pf":
+        return jsonify({"message": "削除完了", "redirect_url": "/db?key=pf", key: key})
+    else:
+        return jsonify({"message": "削除完了", "redirect_url": "/db"})
 
-    return jsonify({"message": "削除完了", "redirect_url": "/db"})
 
-
-@main.route("/logout", methods=["GET"])
+@main.route("/logout", methods=["POST"])
 def logout():
     session.clear()
-    return jsonify({"message": "ログアウト完了", "redirect_url": "/TestQA"})
+    key = request.json.get("key")
+    if key == "pf":
+        return jsonify(
+            {"message": "ログアウト完了", "redirect_url": "/TestQA?key=pf", key: key}
+        )
+    else:
+        return jsonify({"message": "ログアウト完了", "redirect_url": "/TestQA"})
 
 
 @main.route("/login", methods=["POST"])
@@ -1076,6 +1213,7 @@ def login():
     data = request.get_json()
     username = data.get("username")
     password = data.get("password")
+    key = data.get("key")
 
     if not username or not password:
         return jsonify({"error": "Invalid input"}), 400
@@ -1096,10 +1234,23 @@ def login():
             "role": user.role,
         }
 
-        return (
-            jsonify({"message": "ログインに成功しました。", "redirect_url": "/TestQA"}),
-            200,
-        )
+        if key == "pf":
+            return (
+                jsonify(
+                    {
+                        "message": "ログインに成功しました。",
+                        "redirect_url": "/TestQA?key=pf",
+                    }
+                ),
+                200,
+            )
+        else:
+            return (
+                jsonify(
+                    {"message": "ログインに成功しました。", "redirect_url": "/TestQA"}
+                ),
+                200,
+            )
     else:
         return jsonify({"error": f"Database error: {str(sqlite3.Error)}"}), 500
 
