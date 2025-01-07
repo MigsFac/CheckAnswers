@@ -126,6 +126,21 @@ def injectionJava_portfolio():
     return render_template("injectionJava_portfolio.html")
 
 
+@main.route("/Glossary_detail")
+def Glossary_detail():
+    return render_template("Glossary_detail.html")
+
+
+@main.route("/Calculator_detail")
+def Calculator_detail():
+    return render_template("Calculator_detail.html")
+
+
+@main.route("/injectionJava_detail")
+def injectionJava_detail():
+    return render_template("injectionJava_detail.html")
+
+
 @main.route("/supportjp")
 def supportjp():
     return redirect(
@@ -167,6 +182,22 @@ def atprivacyen():
 def attermsjp():
     return redirect(
         "https://butternut-beetle-638.notion.site/152ff023717a80d88504e94cfb12e2b9?pvs=4",
+        code=301,
+    )
+
+
+@main.route("/migsfactory_privacy")
+def migsfactory_privacy():
+    return redirect(
+        "https://butternut-beetle-638.notion.site/160ff023717a80d68c04cf5ff94af858?pvs=4",
+        code=301,
+    )
+
+
+@main.route("/migsfactory_terms")
+def migsfactory_terms():
+    return redirect(
+        "https://butternut-beetle-638.notion.site/172ff023717a80988310d150e385f825?pvs=4",
         code=301,
     )
 
@@ -704,13 +735,14 @@ def Que2nd():
     print("/que2nd post key:", key)
     if key == "pf":
         print("/que2nd pf key:", key)
-        return render_template("Question_portfolio.html", key=key)
+        return redirect(url_for("main.Qdisplay", key=key))
     else:
-        return render_template("Question.html")
+        return redirect(url_for("main.Qdisplay"))
 
 
 @main.route("/Qdisplay", methods=["GET"])
 def Qdisplay():
+    key = request.args.get("key")
     if key == "pf":
         return render_template("Question_portfolio.html", key=key)
     else:

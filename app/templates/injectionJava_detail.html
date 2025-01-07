@@ -1,0 +1,97 @@
+{% extends "PortfolioLayout.html" %}
+
+{% block content %}
+<div class="attendall">
+
+<div class="attendtitle checktitle">
+    <h1 class="attendh1">Dose Calculator in Java</h1>
+    <h2 class="attendh2">「投与量簡易計算機アプリ」</h2>
+</div>
+
+<div class="attendbody">
+
+<img src="{{ url_for('static', filename='images/productJava1.png')}}" class="featurepng">
+<div class="democap">実際のデモは<a class="this" href="{{ url_for('main.injectionJava_portfolio')}}">こちら</a>からご覧いただけます。</div>
+
+<section>
+    <h3>Information - 基本情報</h3>
+    <ul>
+        <li>リリース日：2024年12月</li>
+        <li>対応ブラウザ：Google Chrome,Safari</li>
+    </ul>
+</section>
+
+<section>
+    <h3>Feature - 主な機能</h3>
+    <ul>
+        <li>小児の放射性医薬品の投与量計算</li>
+             
+    </ul>
+</section>
+
+<section>
+    <h3>Release notes - リリースノート</h3>
+   
+    v1.0.0 (2024-12)
+    <ul>
+        <li>リリース</li>
+    </ul>
+</section>
+
+<section>
+    <h3>Target - 対象</h3>
+    <ul>
+        <li>小児の放射性医薬品投与量を計算したい方</li>
+    </ul>
+    <h3>Purpose - 目的</h3>
+    <p>投与量の計算のミスを無くし、妥当性を確認する。</p>
+    <h3>Concept - コンセプト</h3>
+    <p>計算には薬品ごとのクラス、基本量、最小量の与えられた表１および体重別・クラス別の表２から計算する必要があるため、計算ミスをなくすことを第一に考えました。以前VBAで作ったものをJavaで作り直しました。</p>
+    <h3>Difference - 他アプリとの差異</h3>
+    <p>使用シーンが限定されるため、類似アプリは少ないです。値の補完の考え方は施設により異なるため、自施設用としてカスタマイズできました。</p>
+    <h3>Technique - 使用技術</h3>
+    <ul>
+        <li>HTML/CSS</li>
+        <li>JavaScript</li>
+        <li>Java</li>
+        <li>Spring Boot</li>
+    </ul> 
+    <h3>Reasons - 技術の選定理由</h3>
+    学習のためにJavaを選択。フレームワークは軽量かつ高速で学習コストも低いSpring Bootを選択。
+
+    
+</section>
+
+<section>
+    <h3>Team - チーム構成</h3>
+    <ul><li>１人</li></ul>
+    <h3>Period - 開発期間</h3>
+    <ul><li>3日</li></ul>
+    <h3>Issues - 課題</h3>
+    <p>計算は単純なので実装しやすかったですが、表の値が離散値であるため近似式を用いました。また、レスポンシブデザインに時間がかかりました。</p>
+    <h3>Outlook - 今後の展望</h3>
+    <p>実務で使うことを検討する。</p>
+</section>
+
+<section>
+    <h3>FAQ - よくある質問</h3>
+    <p><strong>Q: このアプリは無料ですか？</strong><br>A: はい、無料でご利用いただけます。</p>
+    
+</section>
+
+<section>
+    <h3>Contact  - お問い合わせ</h3>
+    <div class="attendcontact">
+        <ul>
+        <li><a class="contact" id="contactLink" href="https://form.run/@migsfactory-xoPPHC2kzjMrEY72dOxa" data-bs-toggle="modal" data-bs-target="#contactModal" role="button" tabindex="0">お問い合わせ</a></li>
+        <li><div>github : <a href="https://github.com/MigsFac/injectionJava"><img src="{{ url_for('static',filename='images/github-mark.png')}}" style="width:30px;"></a></div></li>
+        </ul>
+    </div>
+</section>
+
+</div>
+</div>
+
+
+
+{% endblock %}
