@@ -4,12 +4,12 @@
 
 <div class="attendtitle">
     <h1 class="attendh1">AttendTap</h1>
-    <h2 class="attendh2">「勤務時間をタップで管理」</h2>
+    <h2 class="attendh2">"Manage your working hours with a tap"</h2>
 </div>
 
 <div class="attendbody">
 
-<img src="{{ url_for('static', filename='images/AttendTapIconFeature.png')}}" class="featurepng">
+<img src="{{ url_for('static', filename='images/AttendTapIconFeatureenen2.png')}}" class="featurepng">
 
 <div class="googleapple">
     <!-- <a href="https://play.google.com">Google Play</a> -->
@@ -19,87 +19,87 @@
 </div>
 
 <section>
-    <h3>Information - 基本情報</h3>
+    <h3>Information </h3>
     <ul>
-        <li>リリース日：2024年12月19日</li>
-        <li>対応OS：iOS,(Android申請中)</li>
+        <li>Release date：December 19, 2024</li>
+        <li>OS：iOS,(Android Currently applying)</li>
     </ul>
 </section>
 
 <section>
-    <h3>Feature - 主な機能</h3>
+    <h3>Feature</h3>
     <ul>
-        <li>タップで超過勤務の理由と今の時間を記録</li>
-        <li>時刻調整ボタンで任意の時間を設定</li>
-        <li>後から容易に編集可能</li>
-        <li>自由にコメント記録</li>
-        <li>記録はリスト表示とカレンダー表示</li>
-        <li>超過勤務の理由の編集・並び替えも可能</li>
-        <li>好みに合わせてテーマカラーやフォントを設定</li>
+        <li>Record the reason for overtime and the current time with a tap.</li>
+        <li>Set a specific time using the time adjustment button.</li>
+        <li>Easily editable later.</li>
+        <li>Freely record comments.</li>
+        <li>View records in both list and calendar formats.</li>
+        <li>Edit and reorder overtime reasons as needed.</li>
+        <li>Customize theme colors and fonts to suit your preferences.</li>
     </ul>
 </section>
 
 <section>
-    <h3>Release notes - リリースノート</h3>
+    <h3>Release notes</h3>
     v1.1.0 (2024-12-24)
     <ul>
-        <li>定時設定を追加。</li>
-        <li>超過勤務時間を一覧画面に表示。</li>
-        <li>UI微調整</li>
+        <li>Added a regular working hours setting.</li>
+        <li>Displayed overtime hours on the list screen.</li>
+        <li>Minor UI adjustments.</li>
     </ul>
     v1.0.0 (2024-12-19)
     <ul>
-        <li>リリース</li>
+        <li>Release</li>
         
     </ul>
 </section>
 
 <section>
-    <h3>Target - 対象</h3>
-    <p>個人で勤怠管理の必要がある人。</p>
-    <h3>Purpose - 目的</h3>
-    <p>出勤・退勤時間や超過勤務の理由を簡単に記録に残し、後から編集できるようにすることで、日頃の勤怠管理にかかる手間や時間を削減すること。</p>
-    <h3>Concept - コンセプト</h3>
-    <p>超過勤務の理由も残したいが毎回記入するのは大変なため、事前に項目を登録しておくことでタップで簡単に記録が残せます。</p>
-    <h3>Difference - 他アプリとの差異</h3>
-    <p>勤怠管理アプリは色々ありますが、管理側のアプリが多く個人用のものが少ない。<br>超過勤務理由を簡単に記録に残せるものがない。</p>
-    <h3>Technique - 使用技術</h3>
+    <h3>Target</h3>
+    <p>For individuals who need to manage their attendance personally.</p>
+    <h3>Purpose</h3>
+    <p>The goal is to simplify the process of recording clock-in/out times and overtime reasons, while allowing easy edits later, reducing the time and effort spent on daily attendance management.</p>
+    <h3>Concept</h3>
+    <p>For those who wish to keep a record of overtime reasons but find it cumbersome to write them down each time, this app allows you to pre-register items and save records with just a tap.</p>
+    <h3>Difference</h3>
+    <p>While there are many attendance management apps available, most are designed for organizational use, leaving few options for individuals. Additionally, there are no apps that make recording overtime reasons so simple.</p>
+    <h3>Technique</h3>
     <ul>
         <li>Flutter</li>
         <li>SQLite</li>
     </ul> 
-    <h3>Reasons - 技術の選定理由</h3>
-    iOSとAndroidの両方でのリリースを考えていたので、クロスプラットフォームであるFlutterを選択。実際にFlutterを採用したことで、iOS/Android両対応のアプリを短期間で開発することができました。<br>
-    勤務情報を管理する上でデータベースでCRUD機能を備えることで、データベースの習熟とスタンドアロンの小規模なスマホアプリに組み込むのに軽量なSQLiteを選択しました。
+    <h3>Technology Selection</h3>
+    Since the goal was to release the app on both iOS and Android, Flutter, a cross-platform framework, was chosen. Using Flutter enabled the development of an app compatible with both platforms in a short period of time.<br> 
+    To manage work-related data effectively, CRUD functionality was implemented using a database. SQLite, being lightweight and suitable for standalone small-scale mobile applications, was selected to integrate seamlessly into the app while also allowing for better familiarity with database management.
 
     
 </section>
 
 <section>
-    <h3>Team - チーム構成</h3>
-    <ul><li>１人</li></ul>
-    <h3>Period - 開発期間</h3>
-    <ul><li>1ヶ月半</li></ul>
-    <h3>Issues - 課題</h3>
-    <p>端末サイズの違いによるUIの調整に苦慮しました。固定要素ではないところを端末のスクリーンサイズを取得しレスポンシブに対応しました。<br>
-    市場規模を考えると日本だけに絞るよりも用語を翻訳するだけで世界へ配信できるなら、そのメリットが大きいと考え英語にも対応し、EUのGDPR対応も行いました。</p>
-    <h3>Outlook - 今後の展望</h3>
-    <p>バグや要望に対するアップデート、特に休憩時間の設定や日付を跨ぐ時の設定、レポートの出力など。<br>英語以外の言語にも対応することで市場拡大し、動向を探りたいと思っています。また、デザインなどの付加価値をさらに増やすことで収益化を検討しています。</p>
+    <h3>Team Structure</h3>
+    <ul><li>1 person</li></ul>
+    <h3>Period</h3>
+    <ul><li>1.5 months</li></ul>
+    <h3>Issues</h3>
+    <p>Adjusting the UI for different device sizes was a major challenge. Non-fixed elements were made responsive by dynamically retrieving the device's screen size.<br> 
+    Considering the market potential, expanding beyond Japan by translating terminology into English presented significant advantages. Therefore, the app was made available in English and ensured compliance with the EU's GDPR regulations.</p>
+    <h3>Outlook</h3>
+    <p>Future updates will address bugs and user requests, particularly for features like break time settings, handling transitions across dates, and report generation.<br> Expanding support to languages other than English will further broaden the market. Additionally, we aim to explore trends and enhance added value, such as improved design, to consider monetization opportunities.</p>
 </section>
 
 <section>
-    <h3>FAQ - よくある質問</h3>
-    <p><strong>Q: このアプリは無料ですか？</strong><br>A: はい、無料でご利用いただけます。</p>
-    <p><strong>Q: どうやって使うのですか？</strong><br>A: 使い方は<a href="https://migsfactory.tech/supportjp">こちら</a>からご確認ください。</p>
+    <h3>FAQ</h3>
+    <p><strong>Q: Is this app free?</strong><br>A: Yes, you can use it for free.</p>
+    <p><strong>Q: How do I use it?</strong><br>A: You can check the instructions <a href="https://migsfactory.tech/supporten">here.</a></p>
 </section>
 
 <section>
-    <h3>Contact  - お問い合わせ</h3>
+    <h3>Contact Us</h3>
     <div class="attendcontact">
         <ul>
-        <li><a class="contact" id="contactLink" href="https://form.run/@migsfactory-xoPPHC2kzjMrEY72dOxa" data-bs-toggle="modal" data-bs-target="#contactModal" role="button" tabindex="0">お問い合わせ</a></li>
-        <li><a href="https://migsfactory.tech/attendtap_termsjp">利用規約</a></li>
-        <li><a href="https://migsfactory.tech/attendtap_privacyjp">プライバシーポリシー</a></li>
+        <li><a class="contact" id="contactLink" href="https://form.run/@migsfactory-xoPPHC2kzjMrEY72dOxa" data-bs-toggle="modal" data-bs-target="#contactModal" role="button" tabindex="0">Contact</a></li>
+        <li><a href="https://migsfactory.tech/attendtap_termsen">Terms & Conditions</a></li>
+        <li><a href="https://migsfactory.tech/attendtap_privacyen">Privacy Policy</a></li>
         <li><div>github : <a href="https://github.com/MigsFac/AttendTap"><img src="{{ url_for('static',filename='images/github-mark.png')}}" style="width:30px;"></a></div></li>
         </ul>
     </div>

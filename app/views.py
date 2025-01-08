@@ -191,6 +191,14 @@ def attermsjp():
     )
 
 
+@main.route("/attendtap_termsen")
+def attendtap_termsen():
+    return redirect(
+        "http://butternut-beetle-638.notion.site",
+        code=301,
+    )
+
+
 @main.route("/migsfactory_privacy")
 def migsfactory_privacy():
     return redirect(
