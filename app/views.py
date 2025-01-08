@@ -101,6 +101,11 @@ def AttendTap():
     return render_template("AttendTap.html")
 
 
+@main.route("/AttendTapEn")
+def AttendTapEn():
+    return render_template("AttendTapEn.html")
+
+
 @main.route("/Portfolio")
 def Portfolio():
     return render_template("Portfolio.html")
