@@ -751,7 +751,7 @@ section{
     .portfolioTitle{font-size:4rem;}
 }
 
-.titleProduct{border-bottom:solid 1px black;margin:1.5rem 0 2rem 0;white-space:pre;}
+.titleProduct{border-bottom:solid 1px black;margin:2rem 0 2rem 0;white-space:pre;}
 
 .productGrid{display:grid;grid-template-columns:1fr 1fr;}
  @media(max-width:768px){
