@@ -45,6 +45,9 @@ load_dotenv()
 
 @main.route("/")
 def index():
+    host = request.host
+    if host.startswith("div."):
+        return render_template("dev/index.html")
     return render_template("index.html", current_page="index")
 
 
@@ -94,6 +97,11 @@ def AIethics():
 @main.route("/GLevel")
 def GLevel():
     return render_template("GLevel.html", current_page="GLevel")
+
+
+@main.route("/devAttendTap")
+def devAttendTap():
+    return render_template("/dev/index.html", current_page="product")
 
 
 @main.route("/AttendTap")
