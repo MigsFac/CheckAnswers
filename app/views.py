@@ -46,7 +46,7 @@ load_dotenv()
 @main.route("/")
 def index():
     host = request.host
-    if host.startswith("div."):
+    if host.startswith("dev."):
         return render_template("dev/index.html")
     return render_template("index.html", current_page="index")
 
