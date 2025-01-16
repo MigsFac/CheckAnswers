@@ -136,7 +136,7 @@ def Calculator_portfolio():
 
 @main.route("/injectionJava_portfolio")
 def injectionJava_portfolio():
-    return render_template("injectionJava_portfolio.html")
+    return redirect("http://13.236.193.159:8080/")
 
 
 @main.route("/Glossary_detail")

@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from flask_migrate import Migrate
 import os
 from app.config import DevConfig, ProdConfig
+from flask_cors import CORS
 
 
 db = SQLAlchemy()
@@ -18,6 +19,8 @@ def create_app():
         load_dotenv(".env")
 
     app = Flask(__name__)
+
+    CORS(app)
 
     if environment == "production":
         app.config.from_object("config.ProdConfig")
