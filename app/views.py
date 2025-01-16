@@ -226,7 +226,7 @@ def migsfactory_terms():
 @main.route("/java")
 def java():
     return redirect(
-        "https://injectionjava-1.onrender.com",
+        "http://13.236.193.159:8080/",
         code=301,
     )
 
