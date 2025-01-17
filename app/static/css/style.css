@@ -11,8 +11,11 @@ body{display:flex;flex-direction:column;
 }
 input[type="checkbox"]{margin:auto;}
 input[type="radio"]{margin:auto 0 ;}
-a img {pointer-events:visibleFill;}
+a img {pointer-events:visibleFill;padding:0;}
+a{display:inline-block;}
+img{display:block;}
 .appstoreBadge{min-height:40px;margin:10px;}
+.googleplayBadge{height:60px;margin:10px;}
 footer{
     background-color:rgb(248, 249, 250);
     text-align:end;
@@ -670,7 +673,9 @@ li.numb{ cursor: pointer;}
 .googleapple{
     display:flex;
     margin:2rem 0;
-    gap:2rem;}
+    gap:2rem;
+    align-items:center;
+}
 .googleapple img{max-width:100%;}
 
 .attendcontact{

@@ -82,16 +82,16 @@
 <div class="product4">
     <div class="productCategory">- スマホアプリ -</div>
     <div class="productTitle">個人用勤怠管理アプリ</div>
-    <div class="productCaption">個人用の勤怠管理アプリです。<br>iOS配信中、Android申請中</div>
+    <div class="productCaption">個人用の勤怠管理アプリです。<br>iOS、Android配信中</div>
     <div class="productTecnique">
         <div class="productFlutter">Flutter</div>
         <div class="productSQLite">SQLite</div>
     </div>
     <div class="productDetail">詳細は<a class="this" href="{{ url_for('main.AttendTap_portfolio')}}">こちら</a></div>
 </div>
-<a href="https://apps.apple.com/jp/app/attendtap/id6739482367" class="productImg atImgA">
+<a href="{{ url_for('main.AttendTap_portfolio')}}" class="productImg atImgA">
     <img src="{{ url_for('static', filename='images/AttendTapIconFeature.png')}}" class="atImg">
-    <span class="tooltip">App storeはこちらから。</span>
+    <span class="tooltip">詳細はこちらから。</span>
 </a>
 <div class="productLine"></div>
 
