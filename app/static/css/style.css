@@ -793,6 +793,7 @@ section{
 .productSQLite{width:auto;background-color:rgba(10,110,250,0.5);border:1px solid grey;border-radius:8px;padding:0 3px;}
 .productFlutter{width:auto;background-color:rgba(100,200,250,0.5);border:1px solid grey;border-radius:8px;padding:0 3px;}
 .productJava{width:auto;background-color:rgba(240,160,70,0.7);border:1px solid grey;border-radius:8px;padding:0 3px;}
+.productArduino{width:auto;background-color:rgba(110, 255, 113, 0.7);border:1px solid grey;border-radius:8px;padding:0 3px;}
 
 .productImg{
     position:relative;

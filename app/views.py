@@ -154,6 +154,11 @@ def injectionJava_detail():
     return render_template("injectionJava_detail.html")
 
 
+@main.route("/Arduino_detail")
+def Arduino_detail():
+    return render_template("Arduino_detail.html")
+
+
 @main.route("/supportjp")
 def supportjp():
     return redirect(
