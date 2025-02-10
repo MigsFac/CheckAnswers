@@ -775,9 +775,9 @@ section{
  @media(max-width:768px){
     .productGrid{grid-template-columns: 1fr;overflow:hidden;width:100%;}
 }
-.product1 ,.product2,.product3,.product4,.product5{align-self:center;width:90%;margin-top:-10px;z-index:10;}
+.productItem{align-self:center;width:90%;margin-top:-10px;z-index:10;}
 @media(max-width:768px){
-    .product1 ,.product2,.product3,.product4,.product5{margin-top:15px;width:100%;}
+    .productItem{margin-top:15px;width:100%;}
 }
 .productCategory{font-size:1rem;grid-column:1/2;margin-bottom:1rem;}
 .productTitle{font-size:1.2rem;font-weight:bold;grid-column:1/2;}
