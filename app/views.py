@@ -159,6 +159,11 @@ def Arduino_detail():
     return render_template("Arduino_detail.html")
 
 
+@main.route("/autoTest_detail")
+def autoTest_detail():
+    return render_template("autoTest_detail.html")
+
+
 @main.route("/supportjp")
 def supportjp():
     return redirect(

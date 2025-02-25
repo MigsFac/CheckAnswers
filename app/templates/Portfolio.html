@@ -131,6 +131,35 @@
 </a>
 <div class="productLine"></div>
 
+
+<div class="productItem">
+    <div class="productCategory">- テスト自動化 -</div>
+    <div class="productTitle">テスト自動化アプリ</div>
+    <div class="productCaption">簡易計算機の実行テストを自動化するアプリです。<br>Excelファイルからテストケースを読み込み、入力値を取得してSeleniumで実行。<br>結果をExcelに出力し、Pytestを用いてHTMLレポートも出力。</div>
+    <div class="productTecnique">
+        <div class="productPython">Python</div>
+        <div class="productSelenium">Selenium</div> 
+        <div class="productPytest">Pytest</div>    
+        <div class="productVBA">VBA</div> 
+    </div>
+    <div class="productDetail">詳細は<a class="this" href="{{ url_for('main.autoTest_detail')}}">こちら</a></div>
+    
+</div>
+<!--
+<a class="productImg" id="area5" href="{{ url_for('main.autoTest_detail')}}" target="_blank">
+    <img src="{{ url_for('static', filename='images/AutoTest1.png') }}" class="imageGroup active">
+    <img src="{{ url_for('static', filename='images/AutoTest2.png') }}" class="imageGroup">
+    <img src="{{ url_for('static', filename='images/AutoTest3.png') }}" class="imageGroup">
+    <span class="tooltip">詳細はこちらからご覧いただけます。</span>
+</a>
+-->
+<a class="productImg atImgA" href="{{ url_for('main.autoTest_detail')}}" >
+    <img src="{{ url_for('static', filename='images/AutoTest1.png') }}" class="atImg">
+    <span class="tooltip">詳細はこちらからご覧いただけます。</span>
+</a>
+<div class="productLine"></div>
+
+</div>
 </div>
 
 <h1 class="titleProduct" id="about-section" style="scroll-margin-top:80px;">About</h1>
@@ -144,6 +173,7 @@
         <div class="row"><div class="PRlabel">16Personalities</div><div class="PRvalue">擁護者 ISFJ-T</div></div>
         <div class="row"><div class="PRlabel">好きなこと</div><div class="PRvalue">パソコンで作業すること、歌を歌うこと、漫画やライトノベルを読むこと、ゲーム、車の運転、散歩、料理</div></div>
         <div class="row"><div class="PRlabel">好きなスポーツ</div><div class="PRvalue">バドミントン、バスケットボール</div></div>
+        <div class="row"><div class="PRlabel">座右の銘</div><div class="PRvalue">不撓不屈</div></div>
         <div class="row"><div class="PRlabel">保有資格</div><div class="PRvalue">基本情報技術者、G検定、JSTQB FL</div></div>
         <div class="row"><div class="PRlabel">GitHub</div><div class="PRvalue"><a href="https://github.com/MigsFac">https://github.com/MigsFac</a></div></div>
     </div>
@@ -205,6 +235,7 @@
     setupSlideshow('area2',2000);
     setupSlideshow('area3',2000);
     setupSlideshow('area4',2000);
+    setupSlideshow('area5',2000);
 
     const image = document.getElementById('PortfolioTopImg');
     const text = document.getElementById('PortfolioTopText')
