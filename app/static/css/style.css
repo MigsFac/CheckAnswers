@@ -14,6 +14,8 @@ input[type="radio"]{margin:auto 0 ;}
 a img {pointer-events:visibleFill;padding:0;}
 a{display:inline-block;}
 img{display:block;}
+summary{background-color:rgb(188, 199, 230)}
+details{border:1px solid grey;margin:1rem 0;}
 .appstoreBadge{min-height:40px;margin:10px;}
 .googleplayBadge{height:60px;margin:10px;}
 footer{
@@ -669,6 +671,13 @@ li.numb{ cursor: pointer;}
     display:grid;
     width:100%;
     justify-self:center;
+    margin-bottom:1.5rem;
+}
+.detailpng{
+    display:grid;
+    width:100%;
+    justify-self:center;
+    margin-bottom:1.5rem;
 }
 .googleapple{
     display:flex;
@@ -844,4 +853,6 @@ a:hover .imageGroup.active .tooltip{opacity:1;}
     .democap{white-space:nowrap;font-size:smaller;}
 }
 .skillItems{font-size:larger;font-weight:bold;margin-top:1rem;}
-
+.details-content{cursor:pointer;}
+#toggle{scroll-margin-top:80px;}
+.test-case{max-width:100%;border:1px solid #ccc;}

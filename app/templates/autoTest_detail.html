@@ -10,7 +10,32 @@
 
 <div class="attendbody">
 
-<img src="{{ url_for('static', filename='images/AutoTest1.png')}}" class="featurepng">
+<img src="{{ url_for('static', filename='images/AutoTest1.png')}}" class="featurepng" style="margin-bottom:1rem">
+<img src="{{ url_for('static', filename='images/testCase.png')}}" class="featurepng">
+
+<a href="{{ url_for('main.autoTest_detail')}}#toggle">
+<details id="toggle">
+    <summary id="toggle-summary"><span id="summary-text">計算機側の簡易的な仕様書です。クリックすると展開されます。</span>
+        <img id="toggle-icon" src="{{ url_for('static', filename='images/testSpecification.png')}}" class="detailpng">
+    </summary>
+    <div id="details-content" class="details-content">
+        <img src="{{ url_for('static', filename='images/test1.png')}}" class="detailpng">
+        <img src="{{ url_for('static', filename='images/test2.png')}}" class="detailpng">
+        <img src="{{ url_for('static', filename='images/test3.png')}}" class="detailpng">
+        <img src="{{ url_for('static', filename='images/test4.png')}}" class="detailpng">
+        <img src="{{ url_for('static', filename='images/test5.png')}}" class="detailpng">
+        <img src="{{ url_for('static', filename='images/test6.png')}}" class="detailpng">
+        <img src="{{ url_for('static', filename='images/test7.png')}}" class="detailpng">
+        <img src="{{ url_for('static', filename='images/test8.png')}}" class="detailpng">
+        <img src="{{ url_for('static', filename='images/test9.png')}}" class="detailpng">
+    
+    </div>
+</details>
+</a>
+
+<!-- <a href="{{ url_for('static', filename='test_case_portfolio.xlsx')}}" download>テストケースをダウンロード</a><br> -->
+テストケース<br>
+<iframe src="{{ url_for('static', filename='test_case_portfolio.pdf')}}" class="test-case" width="100%" height="600px"></iframe>
 
 <section>
     <h3>Information - 基本情報</h3>
@@ -49,18 +74,17 @@
     <h3>Purpose - 目的</h3>
     <p>自作した簡易計算機のテストを自動化し、効率よく網羅的にテストを実行する。</p>
     <h3>Concept - コンセプト</h3>
-    <p>Excelファイルからテストケースの読み込んで、入力値を取得。自動テストで結果取得。結果をExcelファイルに書き出しレポートを作成する。</p>
+    <p>Excelファイルからテストケースを読み込んで、入力値を取得。Seleniumを用いた自動テストで結果取得。結果をExcelファイルに書き出しレポートを作成する。</p>
     
     <h3>Technique - 使用技術</h3>
     <ul>
         <li>Python</li>
         <li>Selenium</li>
         <li>Pytest</li>
-        <li>VBA</li>
         
     </ul> 
     <h3>Reasons - 技術の選定理由</h3>
-    Webアプリのテスト自動化のためSeleniumを使用。客観的な結果としてレポートの出力が必要と感じPytestでHTMLレポートを作成。Excelから入力値を読み込んで値を入力したいためVBAを利用。これらを実現するために使いやすいPythonを使用。
+    Webアプリのテスト自動化のためSeleniumを使用。客観的な結果としてレポートの出力が必要と感じPytestでHTMLレポートを作成。<br>Excelから入力値を読み込んで値を入出力するため、これらを実現するために使いやすいPythonを採用。
 
     
 </section>
@@ -71,9 +95,9 @@
     <h3>Period - 開発期間</h3>
     <ul><li>1週間</li></ul>
     <h3>Issues - 課題</h3>
-    <p>完成されたアプリから逆算して、簡易的な仕様書を作成しました。テストケース作成に苦慮しました。特に計算結果の境界値を探し、入力値を推定するのに時間を要しました。作成したテスト自動化アプリをテストする必要があり、入出力の値の確認の重要性を認識しました。</p>
+    <p>完成されたアプリから逆算して、簡易的な仕様書を作成しました。慣れない仕様書やテストケースの作成に苦慮しました。特に計算結果の境界値を探し、入力値を推定するのに時間を要しました。作成したテスト自動化アプリをテストする必要があり、入出力の値の確認の重要性を認識しました。</p>
     <h3>Outlook - 今後の展望</h3>
-    <p>Seleniumで入力するとHTML5のバリデーションに引っかからないことがあったため、検証が必要。<br>テストケースの読み込みに時間かかるため対策を考える。<br>実際のwebアプリ側にエラーが見つかったため、修正する。<br>現在レポートがPytest-htmlのみなので起票を考える。</p>
+    <p>Seleniumで入力するとHTML5のバリデーションに引っかからないことがあったため、検証が必要。<br>テストケースの読み込みに時間かかるため対策を考える。<br>実際のwebアプリ側にエラーが見つかったため、修正する。<br>現在レポートがPytest-htmlのみなので起票を考える。<br>CI/CDの導入</p>
 </section>
 
 <section>
@@ -94,6 +118,29 @@
 </div>
 </div>
 
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  let details = document.getElementById("toggle");
+  let summary = document.getElementById("toggle-summary");
+  let summaryText = document.getElementById("summary-text");
+  let detailsContent = document.getElementById("details-content");
+  let icon = document.getElementById("toggle-icon");
 
+  // `summary` をクリックで開閉
+  summary.addEventListener("click", function (event) {   
+      if(details.open){
+        summaryText.textContent =  "計算機側の簡易的な仕様書です。クリックすると展開されます。" ;
+      } else {
+        summaryText.textContent =  "計算機側の簡易的な仕様書です。クリックすると閉じます。";
+        details.removeAttribute("open");
+      }
+  });
+  detailsContent.addEventListener("click",function(){
+    summaryText.textContent =  "計算機側の簡易的な仕様書です。クリックすると展開されます。";
+    details.removeAttribute("open");
+  });
+});
+
+</script>
 
 {% endblock %}
