@@ -11,7 +11,7 @@
 <div class="attendbody">
 
 <img src="{{ url_for('static', filename='images/AutoTest1.png')}}" class="featurepng" style="margin-bottom:1rem">
-<img src="{{ url_for('static', filename='images/testCase.png')}}" class="featurepng">
+
 
 <a href="{{ url_for('main.autoTest_detail')}}#toggle">
 <details id="toggle">
@@ -33,10 +33,12 @@
 </details>
 </a>
 
-<!-- <a href="{{ url_for('static', filename='test_case_portfolio.xlsx')}}" download>テストケースをダウンロード</a><br> -->
-テストケース<br>
+<a href="{{ url_for('static', filename='test_case_portfolio.xlsx')}}" download>テストケース(Excelファイル)をダウンロード</a><br>
 <iframe src="{{ url_for('static', filename='test_case_portfolio.pdf')}}" class="test-case" width="100%" height="600px"></iframe>
 
+<a href="https://migsfac.github.io/autoTestSelenium/report.html" target="_blank">Pytest-htmlのレポートはこちら<br>
+    <img src="{{ url_for('static', filename='images/report-title.png')}}" class="detailpng">
+</a>
 <section>
     <h3>Information - 基本情報</h3>
     <ul>
